@@ -13,8 +13,10 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ isset($title) ? $title.' · '.config('app.name') : config('app.name') }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    {{-- Prevent dark mode flash --}}
+    <script>if(localStorage.getItem('bartaflow_dark')==='true')document.documentElement.classList.add('dark')</script>
 </head>
-<body class="bg-gray-50 text-gray-900 antialiased dark:bg-gray-950 dark:text-gray-100">
+<body class="bg-gray-50 text-gray-900 antialiased dark:bg-gray-950 dark:text-gray-100 min-h-screen">
     <div class="flex h-screen overflow-hidden">
 
         {{-- Sidebar --}}
