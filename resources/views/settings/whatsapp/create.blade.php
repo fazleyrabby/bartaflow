@@ -3,12 +3,12 @@
     <x-slot:header>Connect WhatsApp Account</x-slot:header>
     <x-slot:subheader>Enter your WhatsApp Cloud API credentials.</x-slot:subheader>
 
-    <div class="max-w-2xl">
+    <div class="w-full max-w-3xl space-y-4">
         <x-card title="Account credentials">
             <form method="POST" action="{{ route('settings.whatsapp.store') }}" x-data="{ showToken: false }">
                 @csrf
 
-                <div class="space-y-4">
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <x-form.input name="label" label="Account label" :value="old('label')" placeholder="e.g. Customer Support" required />
 
                     <x-form.input name="phone_number" label="Phone number (E.164)" :value="old('phone_number')" placeholder="+8801700000000" required />
@@ -17,8 +17,8 @@
 
                     <x-form.input name="business_account_id" label="WhatsApp Business Account ID" :value="old('business_account_id')" required />
 
-                    <div class="space-y-1">
-                        <label for="access_token" class="block text-sm font-medium text-gray-700">
+                    <div class="sm:col-span-2">
+                        <label for="access_token" class="block mb-2 text-sm font-medium text-gray-900">
                             Access token
                         </label>
                         <div class="flex gap-2">
@@ -26,7 +26,7 @@
                                 :type="showToken ? 'text' : 'password'"
                                 id="access_token"
                                 name="access_token"
-                                class="block flex-1 rounded-lg border-gray-300 text-sm shadow-sm focus:border-emerald-500 focus:ring-emerald-500 {{ $errors->has('access_token') ? 'border-red-400' : '' }}"
+                                class="block flex-1 rounded-lg border-gray-300 bg-gray-50 p-2.5 text-sm shadow-sm focus:border-emerald-500 focus:ring-emerald-500 {{ $errors->has('access_token') ? 'border-red-400' : '' }}"
                                 autocomplete="off"
                                 required
                             />
@@ -37,7 +37,7 @@
                             </button>
                         </div>
                         @error('access_token')
-                            <p class="text-xs text-red-600">{{ $message }}</p>
+                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                         @enderror
                     </div>
                 </div>
@@ -49,7 +49,7 @@
             </form>
         </x-card>
 
-        <div class="mt-4 rounded-lg bg-blue-50 p-4 text-sm text-blue-700 border border-blue-200">
+        <div class="rounded-lg bg-blue-50 p-4 text-sm text-blue-700 border border-blue-200">
             <strong>Where to find your credentials:</strong> Go to
             <strong>Meta Developer Portal → Your App → WhatsApp → API Setup</strong>.
             You'll find the Phone Number ID, WABA ID, and can generate a temporary access token.

@@ -3,13 +3,13 @@
     <x-slot:header>Edit WhatsApp Account</x-slot:header>
     <x-slot:subheader>Update account details. Leave the token blank to keep the existing one.</x-slot:subheader>
 
-    <div class="max-w-2xl">
+    <div class="w-full max-w-3xl">
         <x-card title="Account credentials">
             <form method="POST" action="{{ route('settings.whatsapp.update', $account) }}" x-data="{ showToken: false }">
                 @csrf
                 @method('PATCH')
 
-                <div class="space-y-4">
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <x-form.input name="label" label="Account label" :value="old('label', $account->label)" required />
 
                     <x-form.input name="phone_number" label="Phone number (E.164)" :value="old('phone_number', $account->phone_number)" required />
@@ -18,8 +18,8 @@
 
                     <x-form.input name="business_account_id" label="WhatsApp Business Account ID" :value="old('business_account_id', $account->business_account_id)" required />
 
-                    <div class="space-y-1">
-                        <label for="access_token" class="block text-sm font-medium text-gray-700">
+                    <div class="space-y-1 sm:col-span-2">
+                        <label for="access_token" class="block mb-2 text-sm font-medium text-gray-900">
                             Access token
                             <span class="ml-1 text-xs font-normal text-gray-500">(leave blank to keep existing)</span>
                         </label>
@@ -28,7 +28,7 @@
                                 :type="showToken ? 'text' : 'password'"
                                 id="access_token"
                                 name="access_token"
-                                class="block flex-1 rounded-lg border-gray-300 text-sm shadow-sm focus:border-emerald-500 focus:ring-emerald-500 {{ $errors->has('access_token') ? 'border-red-400' : '' }}"
+                                class="block flex-1 rounded-lg border-gray-300 bg-gray-50 p-2.5 text-sm shadow-sm focus:border-emerald-500 focus:ring-emerald-500 {{ $errors->has('access_token') ? 'border-red-400' : '' }}"
                                 autocomplete="off"
                                 placeholder="••••••••••••••••"
                             />
