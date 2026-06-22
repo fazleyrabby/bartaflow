@@ -20,63 +20,86 @@
 @endphp
 
 <aside
-    :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:w-0 lg:translate-x-0'"
-    class="fixed inset-y-0 left-0 z-40 w-64 shrink-0 flex flex-col border-r border-gray-200 bg-white overflow-hidden transition-all duration-200 ease-in-out lg:static lg:inset-auto"
+    :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
+    class="absolute inset-y-0 left-0 z-40 w-64 shrink-0 flex flex-col bg-gray-900 overflow-hidden transition-transform duration-200 ease-in-out lg:static lg:block"
 >
-    <div class="flex h-16 items-center border-b border-gray-200 px-4">
-        <a href="{{ route('dashboard') }}" class="text-xl font-semibold text-emerald-600">BartaFlow</a>
+    {{-- Logo --}}
+    <div class="flex h-16 items-center px-5 border-b border-gray-700/60">
+        <a href="{{ route('dashboard') }}" class="flex items-center gap-2 text-xl font-bold text-white">
+            <svg class="h-6 w-6 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+            </svg>
+            BartaFlow
+        </a>
     </div>
 
-    <div class="overflow-y-auto py-4 px-3">
-        <ul class="space-y-1">
-            @foreach ($navItems as $item)
-                @php
-                    $href   = $item['route'] ? route($item['route']) : '#';
-                    $active = $item['route'] && request()->routeIs($item['route'].'*');
-                @endphp
-                <li>
-                    <a
-                        href="{{ $href }}"
-                        @class([
-                            'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium',
-                            'bg-emerald-50 text-emerald-700' => $active,
-                            'text-gray-700 hover:bg-gray-100'  => ! $active,
-                            'cursor-default opacity-50'        => ! $item['route'],
-                        ])
-                    >
-                        <svg class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="{{ $item['icon'] }}"/>
-                        </svg>
-                        {{ $item['label'] }}
-                    </a>
-                </li>
-            @endforeach
-        </ul>
+    {{-- Nav --}}
+    <div class="flex-1 overflow-y-auto px-3 py-4 space-y-1">
+        {{-- Main nav --}}
+        <p class="px-3 pb-1 text-[11px] font-bold uppercase tracking-wider text-gray-500">Main</p>
+        @foreach ($navItems as $item)
+            @php
+                $href   = $item['route'] ? route($item['route']) : '#';
+                $active = $item['route'] && request()->routeIs($item['route'].'*');
+            @endphp
+            <a
+                href="{{ $href }}"
+                @class([
+                    'flex items-center gap-3 rounded-lg px-3 py-2 text-[13px] font-medium transition-all duration-150 group',
+                    'bg-white text-gray-900 shadow-sm'                     => $active,
+                    'text-gray-400 hover:bg-gray-800 hover:text-white'     => ! $active,
+                    'cursor-default opacity-40 pointer-events-none'        => ! $item['route'],
+                ])
+            >
+                <svg @class(['h-5 w-5 shrink-0 transition-colors', 'text-gray-900' => $active, 'text-gray-500 group-hover:text-white' => ! $active]) fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="{{ $item['icon'] }}"/>
+                </svg>
+                {{ $item['label'] }}
+            </a>
+        @endforeach
 
-        <ul class="pt-4 mt-4 space-y-1 border-t border-gray-200">
-            <li class="px-3 py-2 text-xs font-semibold uppercase tracking-wider text-gray-500">Settings</li>
-            @foreach ($settingsItems as $item)
-                @php
-                    $href   = $item['route'] ? route($item['route']) : '#';
-                    $active = $item['route'] && request()->routeIs($item['route'].'*');
-                @endphp
-                <li>
-                    <a
-                        href="{{ $href }}"
-                        @class([
-                            'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium',
-                            'bg-emerald-50 text-emerald-700' => $active,
-                            'text-gray-700 hover:bg-gray-100'  => ! $active,
-                            'cursor-default opacity-50'        => ! $item['route'],
-                        ])
-                    >
-                        <svg class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="{{ $item['icon'] }}"/>
-                        </svg>
-                        {{ $item['label'] }}
-                    </a>
-                </li>
-            @endforeach
-        </ul>
+        {{-- Settings nav --}}
+        <p class="px-3 pb-1 pt-4 text-[11px] font-bold uppercase tracking-wider text-gray-500">Settings</p>
+        @foreach ($settingsItems as $item)
+            @php
+                $href   = $item['route'] ? route($item['route']) : '#';
+                $active = $item['route'] && request()->routeIs($item['route'].'*');
+            @endphp
+            <a
+                href="{{ $href }}"
+                @class([
+                    'flex items-center gap-3 rounded-lg px-3 py-2 text-[13px] font-medium transition-all duration-150 group',
+                    'bg-white text-gray-900 shadow-sm'                     => $active,
+                    'text-gray-400 hover:bg-gray-800 hover:text-white'     => ! $active,
+                    'cursor-default opacity-40 pointer-events-none'        => ! $item['route'],
+                ])
+            >
+                <svg @class(['h-5 w-5 shrink-0 transition-colors', 'text-gray-900' => $active, 'text-gray-500 group-hover:text-white' => ! $active]) fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="{{ $item['icon'] }}"/>
+                </svg>
+                {{ $item['label'] }}
+            </a>
+        @endforeach
+    </div>
+
+    {{-- User card --}}
+    <div class="border-t border-gray-700/60 p-4">
+        <div class="flex items-center gap-3">
+            <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-emerald-500/20 text-sm font-bold text-emerald-400">
+                {{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 1)) }}
+            </div>
+            <div class="min-w-0 flex-1">
+                <p class="truncate text-sm font-medium text-white">{{ auth()->user()->name ?? '' }}</p>
+                <p class="truncate text-xs text-gray-500">{{ auth()->user()->email ?? '' }}</p>
+            </div>
+            <form method="POST" action="{{ route('logout') }}" class="shrink-0">
+                @csrf
+                <button type="submit" title="Sign out" class="rounded p-1 text-gray-500 hover:bg-gray-800 hover:text-red-400 transition-colors">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                    </svg>
+                </button>
+            </form>
+        </div>
     </div>
 </aside>
