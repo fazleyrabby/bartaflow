@@ -16,6 +16,7 @@ use App\Http\Controllers\HealthController;
 use App\Http\Controllers\InvitationController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ScheduledMessageController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\TemplateController;
 use App\Http\Controllers\WhatsAppAccountController;
@@ -106,6 +107,14 @@ Route::middleware('auth')->group(function () {
         Route::get('/messages', [MessageController::class, 'index'])->name('messages.index');
         Route::get('/messages/create', [MessageController::class, 'create'])->name('messages.create');
         Route::post('/messages', [MessageController::class, 'store'])->name('messages.store');
+
+        // Scheduling
+        Route::get('/scheduling', [ScheduledMessageController::class, 'index'])->name('scheduling.index');
+        Route::get('/scheduling/create', [ScheduledMessageController::class, 'create'])->name('scheduling.create');
+        Route::post('/scheduling', [ScheduledMessageController::class, 'store'])->name('scheduling.store');
+        Route::get('/scheduling/{scheduling}/edit', [ScheduledMessageController::class, 'edit'])->name('scheduling.edit');
+        Route::put('/scheduling/{scheduling}', [ScheduledMessageController::class, 'update'])->name('scheduling.update');
+        Route::post('/scheduling/{scheduling}/cancel', [ScheduledMessageController::class, 'cancel'])->name('scheduling.cancel');
 
         // Workspace switcher
         Route::post('/workspaces/switch', WorkspaceSwitcherController::class)->name('workspaces.switch');

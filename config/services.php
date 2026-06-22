@@ -7,6 +7,8 @@ return [
     'whatsapp' => [
         // Outbound send throttle (messages per second) for SendMessageJob.
         'rate_per_second' => (int) env('WHATSAPP_RATE_PER_SECOND', 10),
+        // How many hours late a scheduled message may run before it's skipped.
+        'schedule_grace_hours' => (int) env('SCHEDULE_GRACE_HOURS', 24),
     ],
 
     /*

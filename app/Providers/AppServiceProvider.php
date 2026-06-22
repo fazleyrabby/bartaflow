@@ -7,6 +7,7 @@ namespace App\Providers;
 use App\Models\Contact;
 use App\Models\ContactTag;
 use App\Models\Message;
+use App\Models\ScheduledMessage;
 use App\Models\Template;
 use App\Models\WhatsAppAccount;
 use App\Models\Workspace;
@@ -16,6 +17,7 @@ use App\Policies\ContactPolicy;
 use App\Policies\ContactTagPolicy;
 use App\Policies\MembershipPolicy;
 use App\Policies\MessagePolicy;
+use App\Policies\ScheduledMessagePolicy;
 use App\Policies\TemplatePolicy;
 use App\Policies\WhatsAppAccountPolicy;
 use App\Policies\WorkspacePolicy;
@@ -62,6 +64,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(ContactTag::class, ContactTagPolicy::class);
         Gate::policy(Template::class, TemplatePolicy::class);
         Gate::policy(Message::class, MessagePolicy::class);
+        Gate::policy(ScheduledMessage::class, ScheduledMessagePolicy::class);
 
         Template::observe(TemplateObserver::class);
 

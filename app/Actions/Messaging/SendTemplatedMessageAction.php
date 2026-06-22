@@ -24,7 +24,7 @@ final class SendTemplatedMessageAction
 {
     public function __construct(private readonly TemplateRenderer $renderer) {}
 
-    public function execute(Workspace $workspace, User $user, SendTemplatedMessageData $data): DispatchResult
+    public function execute(Workspace $workspace, User $user, SendTemplatedMessageData $data, ?int $scheduledMessageId = null): DispatchResult
     {
         // ── Block rules ───────────────────────────────────────────────────────
         if ($workspace->isSuspended()) {
@@ -89,7 +89,7 @@ final class SendTemplatedMessageAction
         }
 
         // ── Persist + dispatch (atomic) ───────────────────────────────────────
-        $messageIds = DB::transaction(function () use ($workspace, $account, $template, $rows): array {
+        $messageIds = DB::transaction(function () use ($workspace, $account, $template, $rows, $scheduledMessageId): array {
             $ids = [];
 
             foreach ($rows as $row) {
@@ -101,6 +101,7 @@ final class SendTemplatedMessageAction
                     'whatsapp_account_id' => $account->id,
                     'template_id' => $template->id,
                     'contact_id' => $contact->id,
+                    'scheduled_message_id' => $scheduledMessageId,
                     'recipient_phone' => $contact->phone,
                     'recipient_name' => $contact->name,
                     'body' => $row['body'],
