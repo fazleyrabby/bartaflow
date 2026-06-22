@@ -16,6 +16,7 @@ use App\Http\Controllers\HealthController;
 use App\Http\Controllers\InvitationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TeamController;
+use App\Http\Controllers\TemplateController;
 use App\Http\Controllers\WhatsAppAccountController;
 use App\Http\Controllers\WorkspaceController;
 use App\Http\Controllers\WorkspaceSwitcherController;
@@ -94,6 +95,11 @@ Route::middleware('auth')->group(function () {
         Route::post('/tags', [ContactTagController::class, 'store'])->name('tags.store');
         Route::patch('/tags/{tag}', [ContactTagController::class, 'update'])->name('tags.update');
         Route::delete('/tags/{tag}', [ContactTagController::class, 'destroy'])->name('tags.destroy');
+
+        // Templates (CRUD via resource + duplicate & live preview)
+        Route::post('/templates/preview', [TemplateController::class, 'preview'])->name('templates.preview');
+        Route::post('/templates/{template}/duplicate', [TemplateController::class, 'duplicate'])->name('templates.duplicate');
+        Route::resource('templates', TemplateController::class)->except(['show']);
 
         // Workspace switcher
         Route::post('/workspaces/switch', WorkspaceSwitcherController::class)->name('workspaces.switch');

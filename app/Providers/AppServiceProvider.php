@@ -6,12 +6,15 @@ namespace App\Providers;
 
 use App\Models\Contact;
 use App\Models\ContactTag;
+use App\Models\Template;
 use App\Models\WhatsAppAccount;
 use App\Models\Workspace;
 use App\Models\WorkspaceUser;
+use App\Observers\TemplateObserver;
 use App\Policies\ContactPolicy;
 use App\Policies\ContactTagPolicy;
 use App\Policies\MembershipPolicy;
+use App\Policies\TemplatePolicy;
 use App\Policies\WhatsAppAccountPolicy;
 use App\Policies\WorkspacePolicy;
 use App\Services\Tenancy\CurrentWorkspace;
@@ -55,6 +58,9 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(WhatsAppAccount::class, WhatsAppAccountPolicy::class);
         Gate::policy(Contact::class, ContactPolicy::class);
         Gate::policy(ContactTag::class, ContactTagPolicy::class);
+        Gate::policy(Template::class, TemplatePolicy::class);
+
+        Template::observe(TemplateObserver::class);
 
         $this->configureRateLimiting();
         $this->configureViewComposers();
