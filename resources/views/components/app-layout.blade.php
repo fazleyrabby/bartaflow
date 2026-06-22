@@ -13,7 +13,7 @@
 
         <div class="flex min-w-0 flex-1 flex-col overflow-y-auto overflow-x-hidden">
             {{-- Topbar --}}
-            <header class="sticky top-0 z-20 flex h-16 items-center gap-3 border-b border-gray-200 bg-white px-4 sm:px-6">
+            <header class="sticky top-0 z-20 flex h-16 items-center gap-3 border-b border-gray-200 bg-white px-6 sm:px-8">
                 {{-- Sidebar toggle --}}
                 <button
                     @click="sidebarOpen = !sidebarOpen"
