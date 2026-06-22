@@ -20,7 +20,7 @@
 @endphp
 
 <aside
-    class="fixed inset-y-0 left-0 z-40 flex w-64 shrink-0 flex-col border-r border-gray-200 bg-white transition-transform duration-200 -translate-x-full lg:static lg:translate-x-0"
+    class="fixed inset-y-0 left-0 z-40 flex w-64 shrink-0 flex-col border-r border-gray-200 bg-white transition-transform duration-200 -translate-x-full lg:static lg:transform-none"
     :class="sidebarOpen ? 'translate-x-0' : ''"
 >
     <div class="flex h-16 items-center justify-between border-b border-gray-200 px-4">
