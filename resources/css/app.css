@@ -1,13 +1,10 @@
 @import 'tailwindcss';
 @import "flowbite/dist/flowbite.css";
 
-@custom-variant dark (&:where(.dark, .dark *));
-
 @layer utilities {
-    .scrollbar-thin::-webkit-scrollbar { width: 4px; height: 4px; }
-    .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
-    .scrollbar-thin::-webkit-scrollbar-thumb { background: rgba(156,163,175,0.4); border-radius: 9999px; }
-    .scrollbar-thin::-webkit-scrollbar-thumb:hover { background: rgba(107,114,128,0.6); }
+    /* Reserve the scrollbar gutter so the topbar padding stays consistent
+       whether or not a page is tall enough to scroll. */
+    .scroll-gutter-stable { scrollbar-gutter: stable; }
 }
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
