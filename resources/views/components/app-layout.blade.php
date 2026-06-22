@@ -9,7 +9,7 @@
     {{-- Prevent dark mode flash before Alpine initialises --}}
     <script>if(localStorage.getItem('bartaflow_dark')==='true')document.documentElement.classList.add('dark')</script>
 </head>
-<body class="bg-gray-50 text-gray-900 dark:bg-gray-950 dark:text-gray-100" x-data="{ sidebarOpen: false }">
+<body class="bg-gray-50 text-gray-900 dark:bg-gray-950 dark:text-gray-100" x-data="{ sidebarOpen: window.innerWidth >= 1024 }">
     <div class="flex h-screen overflow-hidden">
 
         {{-- Sidebar --}}
