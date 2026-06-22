@@ -13,7 +13,7 @@
 
         <div class="flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
             {{-- Topbar --}}
-            <header class="sticky top-0 z-20 flex h-16 items-center gap-3 border-b border-gray-200 bg-white px-4 sm:px-6">
+            <header class="sticky top-0 z-20 flex h-16 items-center gap-3 border-b border-gray-200 bg-white px-6 sm:px-8">
                 <div class="ml-auto flex items-center gap-3">
                     {{-- Workspace switcher --}}
                     @isset($userWorkspaces)

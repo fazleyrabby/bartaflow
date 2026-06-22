@@ -3,7 +3,7 @@
     <x-slot:header>Workspace Settings</x-slot:header>
     <x-slot:subheader>Manage your workspace name, timezone, and business identity.</x-slot:subheader>
 
-    <div class="max-w-2xl space-y-6">
+    <div class="max-w-3xl space-y-6">
 
         {{-- ── General Settings ── --}}
         <x-card title="General">
@@ -11,7 +11,7 @@
                 @csrf
                 @method('PATCH')
 
-                <div class="space-y-4">
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <x-form.input
                         name="name"
                         label="Workspace name"
@@ -35,12 +35,15 @@
                         @enderror
                     </div>
 
-                    <x-form.input
-                        name="business_name"
-                        label="Business name (used as a variable in message templates)"
-                        :value="$workspace->businessName()"
-                        placeholder="{{ $workspace->name }}"
-                    />
+                    <div class="sm:col-span-2">
+                        <x-form.input
+                            name="business_name"
+                            label="Business name"
+                            :value="$workspace->businessName()"
+                            placeholder="{{ $workspace->name }}"
+                        />
+                        <p class="mt-1 text-xs text-gray-500">Used as a variable in message templates.</p>
+                    </div>
                 </div>
 
                 <div class="mt-6 flex items-center gap-3">
