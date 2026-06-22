@@ -12,18 +12,19 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
 
 /**
- * @property int                                 $id
- * @property int                                 $owner_id
- * @property string                              $name
- * @property string                              $slug
- * @property string                              $timezone
- * @property string                              $locale
- * @property \App\Enums\WorkspaceStatus          $status
- * @property array<string, mixed>|null           $settings
- * @property \Illuminate\Support\Carbon|null     $trial_ends_at
- * @property \Illuminate\Support\Carbon|null     $deleted_at
+ * @property int $id
+ * @property int $owner_id
+ * @property string $name
+ * @property string $slug
+ * @property string $timezone
+ * @property string $locale
+ * @property WorkspaceStatus $status
+ * @property array<string, mixed>|null $settings
+ * @property Carbon|null $trial_ends_at
+ * @property Carbon|null $deleted_at
  */
 class Workspace extends Model
 {
@@ -45,8 +46,8 @@ class Workspace extends Model
     protected function casts(): array
     {
         return [
-            'status'        => WorkspaceStatus::class,
-            'settings'      => 'array',
+            'status' => WorkspaceStatus::class,
+            'settings' => 'array',
             'trial_ends_at' => 'datetime',
         ];
     }

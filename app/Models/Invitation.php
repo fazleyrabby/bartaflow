@@ -11,22 +11,23 @@ use Database\Factories\InvitationFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
- * @property int                                    $id
- * @property int                                    $workspace_id
- * @property int                                    $invited_by
- * @property string                                 $email
- * @property \App\Enums\Role                        $role
- * @property string                                 $token
- * @property \App\Enums\InvitationStatus            $status
- * @property \Illuminate\Support\Carbon             $expires_at
- * @property \Illuminate\Support\Carbon|null        $accepted_at
+ * @property int $id
+ * @property int $workspace_id
+ * @property int $invited_by
+ * @property string $email
+ * @property Role $role
+ * @property string $token
+ * @property InvitationStatus $status
+ * @property Carbon $expires_at
+ * @property Carbon|null $accepted_at
  */
 class Invitation extends Model
 {
     /** @use HasFactory<InvitationFactory> */
-    use HasFactory, BelongsToWorkspace;
+    use BelongsToWorkspace, HasFactory;
 
     protected $fillable = [
         'workspace_id',
@@ -43,9 +44,9 @@ class Invitation extends Model
     protected function casts(): array
     {
         return [
-            'role'        => Role::class,
-            'status'      => InvitationStatus::class,
-            'expires_at'  => 'datetime',
+            'role' => Role::class,
+            'status' => InvitationStatus::class,
+            'expires_at' => 'datetime',
             'accepted_at' => 'datetime',
         ];
     }
@@ -64,7 +65,7 @@ class Invitation extends Model
 
     public function isExpired(): bool
     {
-        /** @var \Illuminate\Support\Carbon $expiresAt */
+        /** @var Carbon $expiresAt */
         $expiresAt = $this->expires_at;
 
         return $expiresAt->isPast();

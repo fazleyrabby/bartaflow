@@ -7,10 +7,10 @@ namespace App\Services\WhatsApp;
 final class SendResult
 {
     public function __construct(
-        public readonly bool    $success,
+        public readonly bool $success,
         public readonly ?string $messageId = null,
-        public readonly ?string $error     = null,
-        public readonly bool    $retryable = false,
+        public readonly ?string $error = null,
+        public readonly bool $retryable = false,
     ) {}
 
     public static function ok(string $messageId): self

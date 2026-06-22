@@ -6,23 +6,23 @@
     'hint' => null,
 ])
 
-<div class="space-y-1">
+<div>
     @if ($label)
-        <label for="{{ $name }}" class="block text-sm font-medium text-gray-700">{{ $label }}</label>
+        <label for="{{ $name }}" class="block mb-2 text-sm font-medium text-gray-900">{{ $label }}</label>
     @endif
 
     <textarea
         id="{{ $name }}"
         name="{{ $name }}"
         rows="{{ $rows }}"
-        {{ $attributes->merge(['class' => 'block w-full rounded-lg border-gray-300 text-sm shadow-sm focus:border-emerald-500 focus:ring-emerald-500 '.($errors->has($name) ? 'border-red-400' : '')]) }}
+        {{ $attributes->merge(['class' => 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block w-full p-2.5 '.($errors->has($name) ? 'border-red-500 bg-red-50' : '')]) }}
     >{{ old($name, $value) }}</textarea>
 
     @if ($hint && ! $errors->has($name))
-        <p class="text-xs text-gray-500">{{ $hint }}</p>
+        <p class="mt-1 text-sm text-gray-500">{{ $hint }}</p>
     @endif
 
     @error($name)
-        <p class="text-xs text-red-600">{{ $message }}</p>
+        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
     @enderror
 </div>

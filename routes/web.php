@@ -10,6 +10,8 @@ use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Auth\VerificationNotificationController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\Auth\VerifyEmailNoticeController;
+use App\Http\Controllers\ContactController;
+use App\Http\Controllers\ContactTagController;
 use App\Http\Controllers\HealthController;
 use App\Http\Controllers\InvitationController;
 use App\Http\Controllers\ProfileController;
@@ -78,6 +80,20 @@ Route::middleware('auth')->group(function () {
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::patch('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
+
+        // Contacts
+        Route::get('/contacts', [ContactController::class, 'index'])->name('contacts.index');
+        Route::post('/contacts', [ContactController::class, 'store'])->name('contacts.store');
+        Route::patch('/contacts/{contact}', [ContactController::class, 'update'])->name('contacts.update');
+        Route::delete('/contacts/{contact}', [ContactController::class, 'destroy'])->name('contacts.destroy');
+        Route::post('/contacts/{contact}/toggle-opt-out', [ContactController::class, 'toggleOptOut'])->name('contacts.toggle-opt-out');
+        Route::post('/contacts/import', [ContactController::class, 'import'])->name('contacts.import');
+
+        // Contact tags (JSON for tag picker)
+        Route::get('/tags', [ContactTagController::class, 'index'])->name('tags.index');
+        Route::post('/tags', [ContactTagController::class, 'store'])->name('tags.store');
+        Route::patch('/tags/{tag}', [ContactTagController::class, 'update'])->name('tags.update');
+        Route::delete('/tags/{tag}', [ContactTagController::class, 'destroy'])->name('tags.destroy');
 
         // Workspace switcher
         Route::post('/workspaces/switch', WorkspaceSwitcherController::class)->name('workspaces.switch');

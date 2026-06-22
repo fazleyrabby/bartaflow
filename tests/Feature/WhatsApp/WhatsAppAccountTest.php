@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Actions\WhatsApp\SendTestMessageAction;
 use App\Enums\AccountStatus;
 use App\Enums\Role;
 use App\Models\User;
@@ -11,20 +12,22 @@ use App\Models\WorkspaceUser;
 use App\Services\WhatsApp\FakeWhatsAppClient;
 use App\Services\WhatsApp\WhatsAppClient;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 
 uses(RefreshDatabase::class);
 
 function waWorkspace(): array
 {
     $owner = User::factory()->create();
-    $ws    = Workspace::factory()->create(['owner_id' => $owner->id]);
+    $ws = Workspace::factory()->create(['owner_id' => $owner->id]);
     WorkspaceUser::create([
         'workspace_id' => $ws->id,
-        'user_id'      => $owner->id,
-        'role'         => Role::Owner->value,
-        'status'       => 'active',
-        'joined_at'    => now(),
+        'user_id' => $owner->id,
+        'role' => Role::Owner->value,
+        'status' => 'active',
+        'joined_at' => now(),
     ]);
+
     return [$owner, $ws];
 }
 
@@ -32,10 +35,10 @@ function waAddMember(Workspace $ws, User $user, Role $role): void
 {
     WorkspaceUser::create([
         'workspace_id' => $ws->id,
-        'user_id'      => $user->id,
-        'role'         => $role->value,
-        'status'       => 'active',
-        'joined_at'    => now(),
+        'user_id' => $user->id,
+        'role' => $role->value,
+        'status' => 'active',
+        'joined_at' => now(),
     ]);
 }
 
@@ -43,21 +46,21 @@ function waAddMember(Workspace $ws, User $user, Role $role): void
 
 it('stores the access_token encrypted — plaintext is not in the database', function () {
     [$owner, $ws] = waWorkspace();
-    $plainToken = 'super-secret-access-token-' . str_repeat('x', 40);
+    $plainToken = 'super-secret-access-token-'.str_repeat('x', 40);
 
     $account = WhatsAppAccount::create([
-        'workspace_id'        => $ws->id,
-        'label'               => 'Test Account',
-        'phone_number'        => '+8801700000000',
-        'phone_number_id'     => 'phone123',
+        'workspace_id' => $ws->id,
+        'label' => 'Test Account',
+        'phone_number' => '+8801700000000',
+        'phone_number_id' => 'phone123',
         'business_account_id' => 'biz123',
-        'access_token'        => $plainToken,
-        'status'              => AccountStatus::Pending->value,
-        'is_default'          => false,
+        'access_token' => $plainToken,
+        'status' => AccountStatus::Pending->value,
+        'is_default' => false,
     ]);
 
     // Value in DB should not match the plaintext token.
-    $rawValue = \Illuminate\Support\Facades\DB::table('whatsapp_accounts')
+    $rawValue = DB::table('whatsapp_accounts')
         ->where('id', $account->id)
         ->value('access_token');
 
@@ -103,18 +106,18 @@ it('admin can access the connect account page', function () {
 // ── Connect account ──────────────────────────────────────────────────────────
 
 it('owner can connect a whatsapp account and status becomes connected', function () {
-    app()->bind(WhatsAppClient::class, fn () => (new FakeWhatsAppClient())->shouldSucceed());
+    app()->bind(WhatsAppClient::class, fn () => (new FakeWhatsAppClient)->shouldSucceed());
 
     [$owner, $ws] = waWorkspace();
 
     $this->actingAs($owner)
         ->withSession(['workspace_id' => $ws->id])
         ->post(route('settings.whatsapp.store'), [
-            'label'               => 'Main Support',
-            'phone_number'        => '+8801700000000',
-            'phone_number_id'     => 'pid_123',
+            'label' => 'Main Support',
+            'phone_number' => '+8801700000000',
+            'phone_number_id' => 'pid_123',
             'business_account_id' => 'biz_123',
-            'access_token'        => str_repeat('a', 64),
+            'access_token' => str_repeat('a', 64),
         ])
         ->assertRedirect(route('settings.whatsapp'));
 
@@ -125,18 +128,18 @@ it('owner can connect a whatsapp account and status becomes connected', function
 });
 
 it('invalid credentials result in status error', function () {
-    app()->bind(WhatsAppClient::class, fn () => (new FakeWhatsAppClient())->shouldFail('Invalid token.'));
+    app()->bind(WhatsAppClient::class, fn () => (new FakeWhatsAppClient)->shouldFail('Invalid token.'));
 
     [$owner, $ws] = waWorkspace();
 
     $this->actingAs($owner)
         ->withSession(['workspace_id' => $ws->id])
         ->post(route('settings.whatsapp.store'), [
-            'label'               => 'Bad Account',
-            'phone_number'        => '+8801700000001',
-            'phone_number_id'     => 'pid_bad',
+            'label' => 'Bad Account',
+            'phone_number' => '+8801700000001',
+            'phone_number_id' => 'pid_bad',
             'business_account_id' => 'biz_bad',
-            'access_token'        => str_repeat('b', 64),
+            'access_token' => str_repeat('b', 64),
         ])
         ->assertRedirect(route('settings.whatsapp'));
 
@@ -148,7 +151,7 @@ it('invalid credentials result in status error', function () {
 // ── Second account does not override default ──────────────────────────────────
 
 it('second connected account does not become default automatically', function () {
-    app()->bind(WhatsAppClient::class, fn () => (new FakeWhatsAppClient())->shouldSucceed());
+    app()->bind(WhatsAppClient::class, fn () => (new FakeWhatsAppClient)->shouldSucceed());
 
     [$owner, $ws] = waWorkspace();
 
@@ -158,11 +161,11 @@ it('second connected account does not become default automatically', function ()
     $this->actingAs($owner)
         ->withSession(['workspace_id' => $ws->id])
         ->post(route('settings.whatsapp.store'), [
-            'label'               => 'Second Account',
-            'phone_number'        => '+8801700000002',
-            'phone_number_id'     => 'pid_2',
+            'label' => 'Second Account',
+            'phone_number' => '+8801700000002',
+            'phone_number_id' => 'pid_2',
             'business_account_id' => 'biz_2',
-            'access_token'        => str_repeat('c', 64),
+            'access_token' => str_repeat('c', 64),
         ]);
 
     $accounts = WhatsAppAccount::where('workspace_id', $ws->id)->get();
@@ -173,16 +176,16 @@ it('second connected account does not become default automatically', function ()
 
 it('admin can update account label', function () {
     [$owner, $ws] = waWorkspace();
-    $admin   = User::factory()->create();
+    $admin = User::factory()->create();
     waAddMember($ws, $admin, Role::Admin);
     $account = WhatsAppAccount::factory()->connected()->create(['workspace_id' => $ws->id, 'label' => 'Old Label']);
 
     $this->actingAs($admin)
         ->withSession(['workspace_id' => $ws->id])
         ->patch(route('settings.whatsapp.update', $account), [
-            'label'               => 'New Label',
-            'phone_number'        => $account->phone_number,
-            'phone_number_id'     => $account->phone_number_id,
+            'label' => 'New Label',
+            'phone_number' => $account->phone_number,
+            'phone_number_id' => $account->phone_number_id,
             'business_account_id' => $account->business_account_id,
         ])
         ->assertRedirect(route('settings.whatsapp'));
@@ -201,11 +204,11 @@ it('blank token on update keeps the existing token', function () {
     $this->actingAs($owner)
         ->withSession(['workspace_id' => $ws->id])
         ->patch(route('settings.whatsapp.update', $account), [
-            'label'               => $account->label,
-            'phone_number'        => $account->phone_number,
-            'phone_number_id'     => $account->phone_number_id,
+            'label' => $account->label,
+            'phone_number' => $account->phone_number,
+            'phone_number_id' => $account->phone_number_id,
             'business_account_id' => $account->business_account_id,
-            'access_token'        => '',
+            'access_token' => '',
         ])
         ->assertRedirect(route('settings.whatsapp'));
 
@@ -215,10 +218,10 @@ it('blank token on update keeps the existing token', function () {
 // ── Test message ──────────────────────────────────────────────────────────────
 
 it('admin can send a test message via connected account', function () {
-    app()->bind(WhatsAppClient::class, fn () => (new FakeWhatsAppClient())->shouldSucceed());
+    app()->bind(WhatsAppClient::class, fn () => (new FakeWhatsAppClient)->shouldSucceed());
 
     [$owner, $ws] = waWorkspace();
-    $admin   = User::factory()->create();
+    $admin = User::factory()->create();
     waAddMember($ws, $admin, Role::Admin);
     $account = WhatsAppAccount::factory()->connected()->create(['workspace_id' => $ws->id]);
 
@@ -230,7 +233,7 @@ it('admin can send a test message via connected account', function () {
 });
 
 it('test message fails when client reports failure', function () {
-    app()->bind(WhatsAppClient::class, fn () => (new FakeWhatsAppClient())->shouldFail('API error.'));
+    app()->bind(WhatsAppClient::class, fn () => (new FakeWhatsAppClient)->shouldFail('API error.'));
 
     [$owner, $ws] = waWorkspace();
     $account = WhatsAppAccount::factory()->connected()->create(['workspace_id' => $ws->id]);
@@ -246,7 +249,7 @@ it('disconnected account blocks test message send', function () {
     [$owner, $ws] = waWorkspace();
     $account = WhatsAppAccount::factory()->disconnected()->create(['workspace_id' => $ws->id]);
 
-    $result = app(\App\Actions\WhatsApp\SendTestMessageAction::class)
+    $result = app(SendTestMessageAction::class)
         ->execute($account, '+8801700000099');
 
     expect($result->success)->toBeFalse()
@@ -270,7 +273,7 @@ it('owner can disconnect an account', function () {
 it('disconnecting the default account promotes the next connected account', function () {
     [$owner, $ws] = waWorkspace();
     $default = WhatsAppAccount::factory()->connected()->default()->create(['workspace_id' => $ws->id]);
-    $backup  = WhatsAppAccount::factory()->connected()->create(['workspace_id' => $ws->id]);
+    $backup = WhatsAppAccount::factory()->connected()->create(['workspace_id' => $ws->id]);
 
     $this->actingAs($owner)
         ->withSession(['workspace_id' => $ws->id])
@@ -283,9 +286,9 @@ it('disconnecting the default account promotes the next connected account', func
 
 it('admin can set a different account as default', function () {
     [$owner, $ws] = waWorkspace();
-    $admin   = User::factory()->create();
+    $admin = User::factory()->create();
     waAddMember($ws, $admin, Role::Admin);
-    $first  = WhatsAppAccount::factory()->connected()->default()->create(['workspace_id' => $ws->id]);
+    $first = WhatsAppAccount::factory()->connected()->default()->create(['workspace_id' => $ws->id]);
     $second = WhatsAppAccount::factory()->connected()->create(['workspace_id' => $ws->id]);
 
     $this->actingAs($admin)
@@ -314,7 +317,7 @@ it('cannot access another workspace\'s account', function () {
 // ── Health check command ──────────────────────────────────────────────────────
 
 it('health check marks connected accounts with bad creds as error', function () {
-    app()->bind(WhatsAppClient::class, fn () => (new FakeWhatsAppClient())->shouldFail('Token revoked.'));
+    app()->bind(WhatsAppClient::class, fn () => (new FakeWhatsAppClient)->shouldFail('Token revoked.'));
 
     [$owner, $ws] = waWorkspace();
     $account = WhatsAppAccount::factory()->connected()->create(['workspace_id' => $ws->id]);
@@ -326,7 +329,7 @@ it('health check marks connected accounts with bad creds as error', function () 
 });
 
 it('health check leaves healthy accounts as connected', function () {
-    app()->bind(WhatsAppClient::class, fn () => (new FakeWhatsAppClient())->shouldSucceed());
+    app()->bind(WhatsAppClient::class, fn () => (new FakeWhatsAppClient)->shouldSucceed());
 
     [$owner, $ws] = waWorkspace();
     $account = WhatsAppAccount::factory()->connected()->create(['workspace_id' => $ws->id]);

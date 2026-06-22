@@ -23,13 +23,13 @@ class WorkspaceFactory extends Factory
         $name = fake()->company();
 
         return [
-            'owner_id'      => User::factory(),
-            'name'          => $name,
-            'slug'          => Str::slug($name).'-'.Str::random(4),
-            'timezone'      => 'Asia/Dhaka',
-            'locale'        => 'en',
-            'status'        => WorkspaceStatus::Active->value,
-            'settings'      => null,
+            'owner_id' => User::factory(),
+            'name' => $name,
+            'slug' => Str::slug($name).'-'.Str::random(4),
+            'timezone' => 'Asia/Dhaka',
+            'locale' => 'en',
+            'status' => WorkspaceStatus::Active->value,
+            'settings' => null,
             'trial_ends_at' => null,
         ];
     }

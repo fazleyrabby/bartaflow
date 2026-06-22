@@ -8,6 +8,7 @@ use App\Actions\Workspaces\AcceptInvitationAction;
 use App\Actions\Workspaces\InviteMemberAction;
 use App\Enums\InvitationStatus;
 use App\Models\Invitation;
+use App\Models\WorkspaceUser;
 use App\Services\Tenancy\CurrentWorkspace;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -49,7 +50,7 @@ class InvitationController extends Controller
     public function resend(Invitation $invitation, InviteMemberAction $action, CurrentWorkspace $current): RedirectResponse
     {
         $workspace = $current->get();
-        $this->authorize('resendInvitation', [\App\Models\WorkspaceUser::class, $workspace]);
+        $this->authorize('resendInvitation', [WorkspaceUser::class, $workspace]);
 
         if ($invitation->workspace_id !== $workspace->id) {
             abort(404);
@@ -65,7 +66,7 @@ class InvitationController extends Controller
     public function revoke(Invitation $invitation, CurrentWorkspace $current): RedirectResponse
     {
         $workspace = $current->get();
-        $this->authorize('revokeInvitation', [\App\Models\WorkspaceUser::class, $workspace]);
+        $this->authorize('revokeInvitation', [WorkspaceUser::class, $workspace]);
 
         if ($invitation->workspace_id !== $workspace->id) {
             abort(404);

@@ -7,7 +7,7 @@ namespace App\Services\WhatsApp;
 final class VerifyResult
 {
     public function __construct(
-        public readonly bool    $success,
+        public readonly bool $success,
         public readonly ?string $error = null,
     ) {}
 

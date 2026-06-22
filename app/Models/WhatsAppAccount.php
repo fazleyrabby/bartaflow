@@ -10,26 +10,27 @@ use Database\Factories\WhatsAppAccountFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
- * @property int                             $id
- * @property int                             $workspace_id
- * @property string                          $label
- * @property string                          $provider
- * @property string                          $phone_number
- * @property string|null                     $phone_number_id
- * @property string|null                     $business_account_id
- * @property string                          $access_token
- * @property string|null                     $webhook_verify_token
- * @property \App\Enums\AccountStatus        $status
- * @property string|null                     $status_reason
- * @property bool                            $is_default
- * @property \Illuminate\Support\Carbon|null $last_checked_at
+ * @property int $id
+ * @property int $workspace_id
+ * @property string $label
+ * @property string $provider
+ * @property string $phone_number
+ * @property string|null $phone_number_id
+ * @property string|null $business_account_id
+ * @property string $access_token
+ * @property string|null $webhook_verify_token
+ * @property AccountStatus $status
+ * @property string|null $status_reason
+ * @property bool $is_default
+ * @property Carbon|null $last_checked_at
  */
 class WhatsAppAccount extends Model
 {
     /** @use HasFactory<WhatsAppAccountFactory> */
-    use HasFactory, BelongsToWorkspace;
+    use BelongsToWorkspace, HasFactory;
 
     protected $table = 'whatsapp_accounts';
 
@@ -52,9 +53,9 @@ class WhatsAppAccount extends Model
     protected function casts(): array
     {
         return [
-            'access_token'   => 'encrypted',
-            'status'         => AccountStatus::class,
-            'is_default'     => 'boolean',
+            'access_token' => 'encrypted',
+            'status' => AccountStatus::class,
+            'is_default' => 'boolean',
             'last_checked_at' => 'datetime',
         ];
     }
@@ -67,7 +68,7 @@ class WhatsAppAccount extends Model
 
     public function maskedToken(): string
     {
-        return '••••••••••••' . substr((string) $this->getRawOriginal('access_token'), -4);
+        return '••••••••••••'.substr((string) $this->getRawOriginal('access_token'), -4);
     }
 
     public function isConnected(): bool

@@ -14,14 +14,15 @@ uses(RefreshDatabase::class);
 function profileUserWithWorkspace(): array
 {
     $user = User::factory()->create();
-    $ws   = Workspace::factory()->create(['owner_id' => $user->id]);
+    $ws = Workspace::factory()->create(['owner_id' => $user->id]);
     WorkspaceUser::create([
         'workspace_id' => $ws->id,
-        'user_id'      => $user->id,
-        'role'         => Role::Owner->value,
-        'status'       => 'active',
-        'joined_at'    => now(),
+        'user_id' => $user->id,
+        'role' => Role::Owner->value,
+        'status' => 'active',
+        'joined_at' => now(),
     ]);
+
     return [$user, $ws];
 }
 
@@ -43,7 +44,7 @@ it('updates profile name and phone without changing email', function () {
     $this->actingAs($user)
         ->withSession(['workspace_id' => $ws->id])
         ->patch(route('profile.update'), [
-            'name'  => 'New Name',
+            'name' => 'New Name',
             'email' => $user->email,
             'phone' => '+8801712345678',
         ])->assertRedirect(route('profile.edit'));
@@ -60,7 +61,7 @@ it('nulls email_verified_at and sends re-verification when email changes', funct
     $this->actingAs($user)
         ->withSession(['workspace_id' => $ws->id])
         ->patch(route('profile.update'), [
-            'name'  => $user->name,
+            'name' => $user->name,
             'email' => 'newemail@example.com',
         ])->assertRedirect(route('verification.notice'));
 
@@ -76,7 +77,7 @@ it('rejects email change to an address already in use', function () {
     $this->actingAs($user)
         ->withSession(['workspace_id' => $ws->id])
         ->patch(route('profile.update'), [
-            'name'  => $user->name,
+            'name' => $user->name,
             'email' => 'taken@example.com',
         ])->assertSessionHasErrors('email');
 });
@@ -88,8 +89,8 @@ it('updates the password with the correct current password', function () {
     $this->actingAs($user)
         ->withSession(['workspace_id' => $ws->id])
         ->patch(route('profile.password'), [
-            'current_password'      => 'OldPass1!',
-            'password'              => 'NewPass2@',
+            'current_password' => 'OldPass1!',
+            'password' => 'NewPass2@',
             'password_confirmation' => 'NewPass2@',
         ])->assertRedirect(route('profile.edit'));
 
@@ -103,8 +104,8 @@ it('rejects password update when current password is wrong', function () {
     $this->actingAs($user)
         ->withSession(['workspace_id' => $ws->id])
         ->patch(route('profile.password'), [
-            'current_password'      => 'wrong',
-            'password'              => 'newpassword',
+            'current_password' => 'wrong',
+            'password' => 'newpassword',
             'password_confirmation' => 'newpassword',
         ])->assertSessionHasErrors('current_password');
 });

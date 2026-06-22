@@ -18,13 +18,13 @@ it('renders the landing page', function () {
 
 it('renders the dashboard shell for a verified authenticated user', function () {
     $user = User::factory()->create();
-    $ws   = Workspace::factory()->create(['owner_id' => $user->id]);
+    $ws = Workspace::factory()->create(['owner_id' => $user->id]);
     WorkspaceUser::create([
         'workspace_id' => $ws->id,
-        'user_id'      => $user->id,
-        'role'         => Role::Owner->value,
-        'status'       => 'active',
-        'joined_at'    => now(),
+        'user_id' => $user->id,
+        'role' => Role::Owner->value,
+        'status' => 'active',
+        'joined_at' => now(),
     ]);
 
     $this->actingAs($user)

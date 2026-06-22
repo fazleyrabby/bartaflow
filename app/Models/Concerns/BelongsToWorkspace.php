@@ -12,7 +12,7 @@ trait BelongsToWorkspace
 {
     public static function bootBelongsToWorkspace(): void
     {
-        static::addGlobalScope(new WorkspaceScope());
+        static::addGlobalScope(new WorkspaceScope);
 
         static::creating(static function (Model $model): void {
             if ($model->getAttribute('workspace_id') === null) {

@@ -6,28 +6,28 @@ namespace App\Enums;
 
 enum InvitationStatus: string
 {
-    case Pending  = 'pending';
+    case Pending = 'pending';
     case Accepted = 'accepted';
-    case Expired  = 'expired';
-    case Revoked  = 'revoked';
+    case Expired = 'expired';
+    case Revoked = 'revoked';
 
     public function label(): string
     {
         return match ($this) {
-            self::Pending  => 'Pending',
+            self::Pending => 'Pending',
             self::Accepted => 'Accepted',
-            self::Expired  => 'Expired',
-            self::Revoked  => 'Revoked',
+            self::Expired => 'Expired',
+            self::Revoked => 'Revoked',
         };
     }
 
     public function color(): string
     {
         return match ($this) {
-            self::Pending  => 'yellow',
+            self::Pending => 'yellow',
             self::Accepted => 'green',
-            self::Expired  => 'gray',
-            self::Revoked  => 'red',
+            self::Expired => 'gray',
+            self::Revoked => 'red',
         };
     }
 

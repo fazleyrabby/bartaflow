@@ -16,11 +16,12 @@ function makeWorkspaceWithOwner(): array
     $workspace = Workspace::factory()->create(['owner_id' => $owner->id]);
     WorkspaceUser::create([
         'workspace_id' => $workspace->id,
-        'user_id'      => $owner->id,
-        'role'         => Role::Owner->value,
-        'status'       => 'active',
-        'joined_at'    => now(),
+        'user_id' => $owner->id,
+        'role' => Role::Owner->value,
+        'status' => 'active',
+        'joined_at' => now(),
     ]);
+
     return [$owner, $workspace];
 }
 
@@ -28,10 +29,10 @@ function addMember(Workspace $workspace, User $user, Role $role): void
 {
     WorkspaceUser::create([
         'workspace_id' => $workspace->id,
-        'user_id'      => $user->id,
-        'role'         => $role->value,
-        'status'       => 'active',
-        'joined_at'    => now(),
+        'user_id' => $user->id,
+        'role' => $role->value,
+        'status' => 'active',
+        'joined_at' => now(),
     ]);
 }
 
@@ -73,7 +74,7 @@ it('owner can update workspace name and timezone', function () {
     $this->actingAs($owner)
         ->withSession(['workspace_id' => $workspace->id])
         ->patch(route('settings.workspace.update'), [
-            'name'     => 'New Workspace Name',
+            'name' => 'New Workspace Name',
             'timezone' => 'Asia/Kolkata',
         ])
         ->assertRedirect(route('settings.workspace'));
@@ -88,8 +89,8 @@ it('owner can set business_name in workspace settings', function () {
     $this->actingAs($owner)
         ->withSession(['workspace_id' => $workspace->id])
         ->patch(route('settings.workspace.update'), [
-            'name'          => $workspace->name,
-            'timezone'      => $workspace->timezone,
+            'name' => $workspace->name,
+            'timezone' => $workspace->timezone,
             'business_name' => 'My Fancy Shop',
         ])
         ->assertRedirect();

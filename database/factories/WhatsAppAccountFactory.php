@@ -20,23 +20,23 @@ class WhatsAppAccountFactory extends Factory
     public function definition(): array
     {
         return [
-            'workspace_id'        => Workspace::factory(),
-            'label'               => fake()->company() . ' WhatsApp',
-            'provider'            => 'cloud_api',
-            'phone_number'        => '+88017' . fake()->numerify('########'),
-            'phone_number_id'     => Str::random(16),
+            'workspace_id' => Workspace::factory(),
+            'label' => fake()->company().' WhatsApp',
+            'provider' => 'cloud_api',
+            'phone_number' => '+88017'.fake()->numerify('########'),
+            'phone_number_id' => Str::random(16),
             'business_account_id' => Str::random(16),
-            'access_token'        => Str::random(64),
-            'status'              => AccountStatus::Pending->value,
-            'is_default'          => false,
-            'last_checked_at'     => null,
+            'access_token' => Str::random(64),
+            'status' => AccountStatus::Pending->value,
+            'is_default' => false,
+            'last_checked_at' => null,
         ];
     }
 
     public function connected(): static
     {
         return $this->state([
-            'status'          => AccountStatus::Connected->value,
+            'status' => AccountStatus::Connected->value,
             'last_checked_at' => now(),
         ]);
     }
@@ -44,7 +44,7 @@ class WhatsAppAccountFactory extends Factory
     public function error(string $reason = 'Invalid access token.'): static
     {
         return $this->state([
-            'status'        => AccountStatus::Error->value,
+            'status' => AccountStatus::Error->value,
             'status_reason' => $reason,
         ]);
     }

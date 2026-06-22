@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Http;
 final class CloudApiWhatsAppClient implements WhatsAppClient
 {
     private string $baseUrl;
+
     private string $version;
 
     public function __construct()
@@ -31,9 +32,9 @@ final class CloudApiWhatsAppClient implements WhatsAppClient
                 ->timeout(10)
                 ->post("{$this->baseUrl}/{$this->version}/{$account->phone_number_id}/messages", [
                     'messaging_product' => 'whatsapp',
-                    'to'                => $payload->to,
-                    'type'              => 'text',
-                    'text'              => ['body' => $payload->body],
+                    'to' => $payload->to,
+                    'type' => 'text',
+                    'text' => ['body' => $payload->body],
                 ]);
 
             if ($response->status() === 429) {

@@ -3,11 +3,13 @@
 declare(strict_types=1);
 
 use App\Enums\Role;
+use App\Models\Invitation;
 use App\Models\User;
 use App\Models\Workspace;
 use App\Models\WorkspaceUser;
 use App\Services\Tenancy\CurrentWorkspace;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 
 uses(RefreshDatabase::class);
 
@@ -19,10 +21,10 @@ function userWithWorkspace(string $role = 'owner'): array
     $workspace = Workspace::factory()->create(['owner_id' => $owner->id]);
     WorkspaceUser::create([
         'workspace_id' => $workspace->id,
-        'user_id'      => $owner->id,
-        'role'         => Role::Owner->value,
-        'status'       => 'active',
-        'joined_at'    => now(),
+        'user_id' => $owner->id,
+        'role' => Role::Owner->value,
+        'status' => 'active',
+        'joined_at' => now(),
     ]);
 
     return [$owner, $workspace];
@@ -78,26 +80,26 @@ it('WorkspaceScope filters queries by current workspace', function () {
 
     // Workspace queries should return ws1 only via the scope on tenant models.
     // (Workspace itself is not tenant-scoped, but Invitation is.)
-    $count = \App\Models\Invitation::count();
+    $count = Invitation::count();
     expect($count)->toBe(0); // No invitations; scope is active.
 
     // Confirm scope is correctly filtering by workspace_id.
-    $invitation = \App\Models\Invitation::withoutGlobalScopes()->create([
+    $invitation = Invitation::withoutGlobalScopes()->create([
         'workspace_id' => $ws2->id,
-        'invited_by'   => $user2->id,
-        'email'        => 'test@example.com',
-        'role'         => Role::Staff->value,
-        'token'        => \Illuminate\Support\Str::random(64),
-        'status'       => 'pending',
-        'expires_at'   => now()->addDays(7),
+        'invited_by' => $user2->id,
+        'email' => 'test@example.com',
+        'role' => Role::Staff->value,
+        'token' => Str::random(64),
+        'status' => 'pending',
+        'expires_at' => now()->addDays(7),
     ]);
 
     // With scope for ws1, ws2's invitation is invisible.
-    expect(\App\Models\Invitation::count())->toBe(0);
+    expect(Invitation::count())->toBe(0);
 
     // Switching scope to ws2 makes it visible.
     app(CurrentWorkspace::class)->set($ws2);
-    expect(\App\Models\Invitation::count())->toBe(1);
+    expect(Invitation::count())->toBe(1);
 });
 
 it('workspace switcher updates session and redirects to dashboard', function () {
@@ -107,10 +109,10 @@ it('workspace switcher updates session and redirects to dashboard', function () 
     $ws2 = Workspace::factory()->create(['owner_id' => $user->id]);
     WorkspaceUser::create([
         'workspace_id' => $ws2->id,
-        'user_id'      => $user->id,
-        'role'         => Role::Owner->value,
-        'status'       => 'active',
-        'joined_at'    => now(),
+        'user_id' => $user->id,
+        'role' => Role::Owner->value,
+        'status' => 'active',
+        'joined_at' => now(),
     ]);
 
     $this->actingAs($user)

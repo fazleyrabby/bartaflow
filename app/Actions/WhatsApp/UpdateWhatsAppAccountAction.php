@@ -12,9 +12,9 @@ final class UpdateWhatsAppAccountAction
     public function execute(WhatsAppAccount $account, array $data): WhatsAppAccount
     {
         $fillable = array_filter([
-            'label'               => $data['label'] ?? null,
-            'phone_number'        => $data['phone_number'] ?? null,
-            'phone_number_id'     => $data['phone_number_id'] ?? null,
+            'label' => $data['label'] ?? null,
+            'phone_number' => $data['phone_number'] ?? null,
+            'phone_number_id' => $data['phone_number_id'] ?? null,
             'business_account_id' => $data['business_account_id'] ?? null,
         ], fn ($v) => $v !== null);
 

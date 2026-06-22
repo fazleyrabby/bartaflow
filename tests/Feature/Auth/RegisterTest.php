@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Enums\Role;
+use App\Enums\WorkspaceStatus;
 use App\Models\User;
 use App\Models\Workspace;
 use Illuminate\Auth\Events\Registered;
@@ -33,7 +34,7 @@ it('registers a user and atomically creates a workspace with owner membership', 
     // Default workspace created from user's name
     $workspace = Workspace::where('owner_id', $user->id)->firstOrFail();
     expect($workspace->name)->toBe("Rahim Chowdhury's Workspace")
-        ->and($workspace->status)->toBe(\App\Enums\WorkspaceStatus::Active);
+        ->and($workspace->status)->toBe(WorkspaceStatus::Active);
 
     // Owner membership created
     $this->assertDatabaseHas('workspace_users', [

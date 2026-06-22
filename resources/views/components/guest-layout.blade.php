@@ -7,12 +7,14 @@
     <title>{{ $title ?? config('app.name') }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="min-h-screen bg-gray-50 text-gray-900 antialiased">
-    <div class="flex min-h-screen flex-col items-center justify-center px-4 py-10">
-        <a href="{{ route('home') }}" class="mb-6 text-2xl font-bold text-emerald-600">BartaFlow</a>
+<body class="bg-gray-50 antialiased">
+    <div class="flex flex-col items-center justify-center px-6 mx-auto md:h-screen">
+        <a href="{{ route('home') }}" class="flex items-center mb-6 text-2xl font-semibold text-emerald-600">BartaFlow</a>
 
-        <main class="w-full max-w-md rounded-xl border border-gray-200 bg-white p-10 shadow-sm">
-            {{ $slot }}
+        <main class="w-full bg-white rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0">
+            <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
+                {{ $slot }}
+            </div>
         </main>
 
         <p class="mt-6 text-sm text-gray-500">Automated WhatsApp Notifications for Modern Businesses</p>

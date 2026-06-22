@@ -1,23 +1,19 @@
 @props(['headers' => []])
 
-{{--
-    Responsive table shell. On <md screens callers should render stacked cards;
-    this component covers the desktop table per docs/frontend.md §7.
---}}
-<div {{ $attributes->merge(['class' => 'overflow-hidden rounded-xl border border-gray-200 bg-white']) }}>
-    <table class="min-w-full divide-y divide-gray-200">
+<div {{ $attributes->merge(['class' => 'relative overflow-x-auto rounded-lg border border-gray-200 bg-white']) }}>
+    <table class="w-full text-sm text-left text-gray-500">
         @if (count($headers))
-            <thead class="bg-gray-50">
+            <thead class="text-xs text-gray-700 uppercase bg-gray-50">
                 <tr>
                     @foreach ($headers as $head)
-                        <th scope="col" class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
+                        <th scope="col" class="px-6 py-3">
                             {{ $head }}
                         </th>
                     @endforeach
                 </tr>
             </thead>
         @endif
-        <tbody class="divide-y divide-gray-100">
+        <tbody>
             {{ $slot }}
         </tbody>
     </table>

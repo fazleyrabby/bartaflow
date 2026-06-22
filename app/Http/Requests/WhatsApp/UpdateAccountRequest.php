@@ -21,11 +21,11 @@ class UpdateAccountRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'label'               => ['required', 'string', 'min:2', 'max:60'],
-            'phone_number'        => ['required', 'string', 'max:20'],
-            'phone_number_id'     => ['required', 'string', 'max:64'],
+            'label' => ['required', 'string', 'min:2', 'max:60'],
+            'phone_number' => ['required', 'string', 'max:20'],
+            'phone_number_id' => ['required', 'string', 'max:64'],
             'business_account_id' => ['required', 'string', 'max:64'],
-            'access_token'        => ['nullable', 'string', 'min:10'],
+            'access_token' => ['nullable', 'string', 'min:10'],
         ];
     }
 }

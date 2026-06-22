@@ -24,7 +24,7 @@ class TeamController extends Controller
     public function index(): View
     {
         $workspace = $this->current->get();
-        $this->authorize('viewAny', [\App\Models\WorkspaceUser::class, $workspace]);
+        $this->authorize('viewAny', [WorkspaceUser::class, $workspace]);
 
         $members = WorkspaceUser::with('user')
             ->where('workspace_id', $workspace->id)

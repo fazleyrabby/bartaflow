@@ -22,8 +22,8 @@ final class AcceptInvitationAction
             throw ValidationException::withMessages([
                 'token' => match ($status) {
                     InvitationStatus::Accepted => 'This invitation has already been accepted.',
-                    InvitationStatus::Revoked  => 'This invitation has been revoked.',
-                    default                    => 'This invitation has expired.',
+                    InvitationStatus::Revoked => 'This invitation has been revoked.',
+                    default => 'This invitation has expired.',
                 },
             ]);
         }
@@ -50,14 +50,14 @@ final class AcceptInvitationAction
                 $role = $invitation->role;
 
                 $invitation->workspace->users()->attach($user->id, [
-                    'role'      => $role->value,
-                    'status'    => 'active',
+                    'role' => $role->value,
+                    'status' => 'active',
                     'joined_at' => now(),
                 ]);
             }
 
             $invitation->update([
-                'status'      => InvitationStatus::Accepted->value,
+                'status' => InvitationStatus::Accepted->value,
                 'accepted_at' => now(),
             ]);
         });

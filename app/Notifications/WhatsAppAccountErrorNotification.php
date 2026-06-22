@@ -23,7 +23,7 @@ class WhatsAppAccountErrorNotification extends Notification
 
     public function toMail(mixed $notifiable): MailMessage
     {
-        return (new MailMessage())
+        return (new MailMessage)
             ->subject("WhatsApp Account Error — {$this->account->label}")
             ->greeting('Action Required')
             ->line("Your WhatsApp account **{$this->account->label}** ({$this->account->phone_number}) has encountered an error.")

@@ -19,23 +19,23 @@ final class ConnectWhatsAppAccountAction
     {
         return DB::transaction(function () use ($workspace, $data): WhatsAppAccount {
             $account = WhatsAppAccount::create([
-                'workspace_id'        => $workspace->id,
-                'label'               => $data['label'],
-                'provider'            => 'cloud_api',
-                'phone_number'        => $data['phone_number'],
-                'phone_number_id'     => $data['phone_number_id'] ?? null,
+                'workspace_id' => $workspace->id,
+                'label' => $data['label'],
+                'provider' => 'cloud_api',
+                'phone_number' => $data['phone_number'],
+                'phone_number_id' => $data['phone_number_id'] ?? null,
                 'business_account_id' => $data['business_account_id'] ?? null,
-                'access_token'        => $data['access_token'],
-                'status'              => AccountStatus::Pending->value,
-                'is_default'          => false,
+                'access_token' => $data['access_token'],
+                'status' => AccountStatus::Pending->value,
+                'is_default' => false,
             ]);
 
             // Verify credentials immediately.
             $result = $this->client->verifyCredentials($account);
 
             $account->update([
-                'status'         => $result->success ? AccountStatus::Connected->value : AccountStatus::Error->value,
-                'status_reason'  => $result->error,
+                'status' => $result->success ? AccountStatus::Connected->value : AccountStatus::Error->value,
+                'status_reason' => $result->error,
                 'last_checked_at' => now(),
             ]);
 

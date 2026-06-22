@@ -12,7 +12,8 @@ use Illuminate\Console\Command;
 
 class WhatsAppHealthCheckCommand extends Command
 {
-    protected $signature   = 'accounts:health-check';
+    protected $signature = 'accounts:health-check';
+
     protected $description = 'Re-verify all connected WhatsApp accounts and flag errors.';
 
     public function handle(WhatsAppClient $client): int
@@ -30,7 +31,7 @@ class WhatsAppHealthCheckCommand extends Command
 
             if (! $result->success) {
                 $account->update([
-                    'status'        => AccountStatus::Error->value,
+                    'status' => AccountStatus::Error->value,
                     'status_reason' => $result->error,
                 ]);
 

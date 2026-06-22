@@ -20,9 +20,9 @@ class UpdateWorkspaceRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'          => ['required', 'string', 'min:2', 'max:100'],
-            'timezone'      => ['required', 'string', 'timezone:all'],
-            'locale'        => ['nullable', 'string', 'max:8'],
+            'name' => ['required', 'string', 'min:2', 'max:100'],
+            'timezone' => ['required', 'string', 'timezone:all'],
+            'locale' => ['nullable', 'string', 'max:8'],
             'business_name' => ['nullable', 'string', 'max:120'],
         ];
     }

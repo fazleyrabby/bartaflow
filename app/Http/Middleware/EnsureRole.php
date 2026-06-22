@@ -15,7 +15,7 @@ final class EnsureRole
 {
     public function handle(Request $request, Closure $next, string ...$roles): Response
     {
-        $user      = $request->user();
+        $user = $request->user();
         $workspace = app(CurrentWorkspace::class)->get();
 
         $membership = WorkspaceUser::where('workspace_id', $workspace->id)

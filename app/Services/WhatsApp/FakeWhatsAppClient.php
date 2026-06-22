@@ -9,13 +9,14 @@ use Illuminate\Support\Str;
 
 final class FakeWhatsAppClient implements WhatsAppClient
 {
-    private bool $shouldSucceed   = true;
+    private bool $shouldSucceed = true;
+
     private ?string $failureError = null;
 
     public function shouldFail(string $error = 'Simulated failure.'): self
     {
         $this->shouldSucceed = false;
-        $this->failureError  = $error;
+        $this->failureError = $error;
 
         return $this;
     }
@@ -23,7 +24,7 @@ final class FakeWhatsAppClient implements WhatsAppClient
     public function shouldSucceed(): self
     {
         $this->shouldSucceed = true;
-        $this->failureError  = null;
+        $this->failureError = null;
 
         return $this;
     }
@@ -34,7 +35,7 @@ final class FakeWhatsAppClient implements WhatsAppClient
             return SendResult::fail($this->failureError ?? 'Simulated failure.');
         }
 
-        return SendResult::ok('wamid.fake_' . Str::random(16));
+        return SendResult::ok('wamid.fake_'.Str::random(16));
     }
 
     public function verifyCredentials(WhatsAppAccount $account): VerifyResult

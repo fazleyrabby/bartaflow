@@ -16,11 +16,11 @@ class DemoSeeder extends Seeder
         $user = User::firstOrCreate(
             ['email' => 'admin@email.com'],
             [
-                'name'              => 'Demo Admin',
-                'password'          => Hash::make('password'),
+                'name' => 'Demo Admin',
+                'password' => Hash::make('password'),
                 'email_verified_at' => now(),
-                'phone'             => null,
-                'last_login_at'     => null,
+                'phone' => null,
+                'last_login_at' => null,
             ]
         );
 

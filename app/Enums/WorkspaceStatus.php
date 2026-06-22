@@ -13,18 +13,18 @@ enum WorkspaceStatus: string
     public function label(): string
     {
         return match ($this) {
-            self::Active    => 'Active',
+            self::Active => 'Active',
             self::Suspended => 'Suspended',
-            self::Deleted   => 'Deleted',
+            self::Deleted => 'Deleted',
         };
     }
 
     public function color(): string
     {
         return match ($this) {
-            self::Active    => 'green',
+            self::Active => 'green',
             self::Suspended => 'yellow',
-            self::Deleted   => 'red',
+            self::Deleted => 'red',
         };
     }
 

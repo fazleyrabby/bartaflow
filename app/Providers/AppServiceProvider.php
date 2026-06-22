@@ -4,8 +4,13 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Models\Contact;
+use App\Models\ContactTag;
+use App\Models\WhatsAppAccount;
 use App\Models\Workspace;
 use App\Models\WorkspaceUser;
+use App\Policies\ContactPolicy;
+use App\Policies\ContactTagPolicy;
 use App\Policies\MembershipPolicy;
 use App\Policies\WhatsAppAccountPolicy;
 use App\Policies\WorkspacePolicy;
@@ -32,10 +37,10 @@ class AppServiceProvider extends ServiceProvider
         // Bind WhatsAppClient: fake in testing/local, real in production.
         $this->app->bind(WhatsAppClient::class, function () {
             if (app()->environment(['testing', 'local'])) {
-                return new FakeWhatsAppClient();
+                return new FakeWhatsAppClient;
             }
 
-            return new CloudApiWhatsAppClient();
+            return new CloudApiWhatsAppClient;
         });
     }
 
@@ -47,7 +52,9 @@ class AppServiceProvider extends ServiceProvider
 
         Gate::policy(Workspace::class, WorkspacePolicy::class);
         Gate::policy(WorkspaceUser::class, MembershipPolicy::class);
-        Gate::policy(\App\Models\WhatsAppAccount::class, WhatsAppAccountPolicy::class);
+        Gate::policy(WhatsAppAccount::class, WhatsAppAccountPolicy::class);
+        Gate::policy(Contact::class, ContactPolicy::class);
+        Gate::policy(ContactTag::class, ContactTagPolicy::class);
 
         $this->configureRateLimiting();
         $this->configureViewComposers();
@@ -72,13 +79,13 @@ class AppServiceProvider extends ServiceProvider
                 return;
             }
 
-            $current        = app(CurrentWorkspace::class);
-            $user           = auth()->user();
+            $current = app(CurrentWorkspace::class);
+            $user = auth()->user();
             $userWorkspaces = $user?->workspaces()->select(['workspaces.id', 'workspaces.name'])->get();
 
             $view->with([
-                'userName'       => $user?->name,
-                'workspaceName'  => $current->isSet() ? $current->get()->name : 'My Workspace',
+                'userName' => $user?->name,
+                'workspaceName' => $current->isSet() ? $current->get()->name : 'My Workspace',
                 'userWorkspaces' => $userWorkspaces ?? collect(),
                 'currentWorkspaceId' => $current->isSet() ? $current->id() : null,
             ]);

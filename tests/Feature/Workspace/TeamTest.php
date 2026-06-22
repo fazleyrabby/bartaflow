@@ -8,6 +8,7 @@ use App\Models\Invitation;
 use App\Models\User;
 use App\Models\Workspace;
 use App\Models\WorkspaceUser;
+use App\Notifications\InvitationNotification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
 
@@ -16,14 +17,15 @@ uses(RefreshDatabase::class);
 function wsWithOwner(): array
 {
     $owner = User::factory()->create();
-    $ws    = Workspace::factory()->create(['owner_id' => $owner->id]);
+    $ws = Workspace::factory()->create(['owner_id' => $owner->id]);
     WorkspaceUser::create([
         'workspace_id' => $ws->id,
-        'user_id'      => $owner->id,
-        'role'         => Role::Owner->value,
-        'status'       => 'active',
-        'joined_at'    => now(),
+        'user_id' => $owner->id,
+        'role' => Role::Owner->value,
+        'status' => 'active',
+        'joined_at' => now(),
     ]);
+
     return [$owner, $ws];
 }
 
@@ -31,10 +33,10 @@ function addWsMember(Workspace $ws, User $user, Role $role): void
 {
     WorkspaceUser::create([
         'workspace_id' => $ws->id,
-        'user_id'      => $user->id,
-        'role'         => $role->value,
-        'status'       => 'active',
-        'joined_at'    => now(),
+        'user_id' => $user->id,
+        'role' => $role->value,
+        'status' => 'active',
+        'joined_at' => now(),
     ]);
 }
 
@@ -83,18 +85,18 @@ it('owner can invite a new member and notification is queued', function () {
         ->withSession(['workspace_id' => $ws->id])
         ->post(route('settings.team.invite'), [
             'email' => 'newmember@example.com',
-            'role'  => Role::Staff->value,
+            'role' => Role::Staff->value,
         ])
         ->assertRedirect(route('settings.team'));
 
     $this->assertDatabaseHas('invitations', [
         'workspace_id' => $ws->id,
-        'email'        => 'newmember@example.com',
-        'role'         => Role::Staff->value,
-        'status'       => InvitationStatus::Pending->value,
+        'email' => 'newmember@example.com',
+        'role' => Role::Staff->value,
+        'status' => InvitationStatus::Pending->value,
     ]);
 
-    Notification::assertSentOnDemand(\App\Notifications\InvitationNotification::class);
+    Notification::assertSentOnDemand(InvitationNotification::class);
 });
 
 it('invitation to an existing member is rejected', function () {
@@ -106,7 +108,7 @@ it('invitation to an existing member is rejected', function () {
         ->withSession(['workspace_id' => $ws->id])
         ->post(route('settings.team.invite'), [
             'email' => $member->email,
-            'role'  => Role::Staff->value,
+            'role' => Role::Staff->value,
         ])
         ->assertSessionHasErrors('email');
 });
@@ -120,7 +122,7 @@ it('staff cannot invite', function () {
         ->withSession(['workspace_id' => $ws->id])
         ->post(route('settings.team.invite'), [
             'email' => 'someone@example.com',
-            'role'  => Role::Staff->value,
+            'role' => Role::Staff->value,
         ])
         ->assertForbidden();
 });
@@ -129,7 +131,7 @@ it('invitation page is publicly visible by token', function () {
     [$owner, $ws] = wsWithOwner();
     $invitation = Invitation::factory()->create([
         'workspace_id' => $ws->id,
-        'invited_by'   => $owner->id,
+        'invited_by' => $owner->id,
     ]);
 
     $this->get(route('invitations.show', $invitation->token))
@@ -141,7 +143,7 @@ it('expired invitation page redirects to login with error', function () {
     [$owner, $ws] = wsWithOwner();
     $invitation = Invitation::factory()->expired()->create([
         'workspace_id' => $ws->id,
-        'invited_by'   => $owner->id,
+        'invited_by' => $owner->id,
     ]);
 
     $this->get(route('invitations.show', $invitation->token))
@@ -153,9 +155,9 @@ it('authenticated user with matching email can accept invitation', function () {
     $invitee = User::factory()->create(['email' => 'invitee@example.com']);
     $invitation = Invitation::factory()->create([
         'workspace_id' => $ws->id,
-        'invited_by'   => $owner->id,
-        'email'        => 'invitee@example.com',
-        'role'         => Role::Admin->value,
+        'invited_by' => $owner->id,
+        'email' => 'invitee@example.com',
+        'role' => Role::Admin->value,
     ]);
 
     $this->actingAs($invitee)
@@ -164,8 +166,8 @@ it('authenticated user with matching email can accept invitation', function () {
 
     $this->assertDatabaseHas('workspace_users', [
         'workspace_id' => $ws->id,
-        'user_id'      => $invitee->id,
-        'role'         => Role::Admin->value,
+        'user_id' => $invitee->id,
+        'role' => Role::Admin->value,
     ]);
 
     expect($invitation->fresh()->status)->toBe(InvitationStatus::Accepted);
@@ -173,11 +175,11 @@ it('authenticated user with matching email can accept invitation', function () {
 
 it('invitation acceptance fails when email does not match', function () {
     [$owner, $ws] = wsWithOwner();
-    $wrongUser  = User::factory()->create(['email' => 'wrong@example.com']);
+    $wrongUser = User::factory()->create(['email' => 'wrong@example.com']);
     $invitation = Invitation::factory()->create([
         'workspace_id' => $ws->id,
-        'invited_by'   => $owner->id,
-        'email'        => 'correct@example.com',
+        'invited_by' => $owner->id,
+        'email' => 'correct@example.com',
     ]);
 
     $this->actingAs($wrongUser)
@@ -190,8 +192,8 @@ it('expired invitation cannot be accepted', function () {
     $invitee = User::factory()->create(['email' => 'invitee@example.com']);
     $invitation = Invitation::factory()->expired()->create([
         'workspace_id' => $ws->id,
-        'invited_by'   => $owner->id,
-        'email'        => 'invitee@example.com',
+        'invited_by' => $owner->id,
+        'email' => 'invitee@example.com',
     ]);
 
     $this->actingAs($invitee)
@@ -203,7 +205,7 @@ it('owner can revoke a pending invitation', function () {
     [$owner, $ws] = wsWithOwner();
     $invitation = Invitation::factory()->create([
         'workspace_id' => $ws->id,
-        'invited_by'   => $owner->id,
+        'invited_by' => $owner->id,
     ]);
 
     $this->actingAs($owner)
@@ -283,6 +285,6 @@ it('admin can remove a staff member', function () {
 
     $this->assertDatabaseMissing('workspace_users', [
         'workspace_id' => $ws->id,
-        'user_id'      => $staff->id,
+        'user_id' => $staff->id,
     ]);
 });

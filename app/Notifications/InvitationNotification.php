@@ -28,12 +28,12 @@ class InvitationNotification extends Notification
     {
         $acceptUrl = route('invitations.show', ['token' => $this->invitation->token]);
 
-        return (new MailMessage())
+        return (new MailMessage)
             ->subject("You've been invited to join {$this->workspace->name} on BartaFlow")
-            ->greeting("Hello!")
+            ->greeting('Hello!')
             ->line("{$this->invitedBy->name} has invited you to join **{$this->workspace->name}** as a **{$this->invitation->role->label()}**.")
             ->action('Accept Invitation', $acceptUrl)
-            ->line("This invitation expires in 7 days.")
-            ->line("If you did not expect this invitation, you can safely ignore this email.");
+            ->line('This invitation expires in 7 days.')
+            ->line('If you did not expect this invitation, you can safely ignore this email.');
     }
 }

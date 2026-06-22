@@ -4,17 +4,28 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
+use App\Actions\Workspaces\CreateWorkspaceAction;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class UserSeeder extends Seeder
 {
-    public function run(): void
+    public function run(CreateWorkspaceAction $action): void
     {
-        User::factory()->create([
-            'name' => 'Admin',
-            'email' => 'admin@email.com',
-            'email_verified_at' => now(),
-        ]);
+        $user = User::firstOrCreate(
+            ['email' => 'admin@email.com'],
+            [
+                'name' => 'Admin',
+                'password' => Hash::make('password'),
+                'email_verified_at' => now(),
+                'phone' => null,
+                'last_login_at' => null,
+            ]
+        );
+
+        if ($user->workspaces()->doesntExist()) {
+            $action->execute($user, 'My Workspace');
+        }
     }
 }

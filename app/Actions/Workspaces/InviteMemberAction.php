@@ -10,6 +10,7 @@ use App\Models\Invitation;
 use App\Models\User;
 use App\Models\Workspace;
 use App\Notifications\InvitationNotification;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
@@ -40,16 +41,16 @@ final class InviteMemberAction
 
         $invitation = Invitation::create([
             'workspace_id' => $workspace->id,
-            'invited_by'   => $invitedBy->id,
-            'email'        => $email,
-            'role'         => $role->value,
-            'token'        => Str::random(64),
-            'status'       => InvitationStatus::Pending->value,
-            'expires_at'   => now()->addDays(7),
+            'invited_by' => $invitedBy->id,
+            'email' => $email,
+            'role' => $role->value,
+            'token' => Str::random(64),
+            'status' => InvitationStatus::Pending->value,
+            'expires_at' => now()->addDays(7),
         ]);
 
         // Send the invitation email.
-        \Illuminate\Support\Facades\Notification::route('mail', $email)
+        Notification::route('mail', $email)
             ->notify(new InvitationNotification($invitation, $invitedBy, $workspace));
 
         return $invitation;

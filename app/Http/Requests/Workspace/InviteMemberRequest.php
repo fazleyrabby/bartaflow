@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Requests\Workspace;
 
 use App\Enums\Role;
+use App\Models\WorkspaceUser;
 use App\Services\Tenancy\CurrentWorkspace;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -15,7 +16,7 @@ class InviteMemberRequest extends FormRequest
     {
         $workspace = app(CurrentWorkspace::class)->get();
 
-        return $this->user()->can('invite', [\App\Models\WorkspaceUser::class, $workspace]);
+        return $this->user()->can('invite', [WorkspaceUser::class, $workspace]);
     }
 
     /** @return array<string, mixed> */
@@ -25,7 +26,7 @@ class InviteMemberRequest extends FormRequest
 
         return [
             'email' => ['required', 'string', 'email', 'max:180'],
-            'role'  => ['required', Rule::in($assignable)],
+            'role' => ['required', Rule::in($assignable)],
         ];
     }
 
@@ -34,7 +35,7 @@ class InviteMemberRequest extends FormRequest
     {
         return [
             'email.required' => 'Enter a valid email address.',
-            'role.in'        => 'Role must be Admin or Staff.',
+            'role.in' => 'Role must be Admin or Staff.',
         ];
     }
 }

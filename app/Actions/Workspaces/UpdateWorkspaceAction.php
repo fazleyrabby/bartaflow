@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Actions\Workspaces;
 
 use App\Models\Workspace;
-use Illuminate\Support\Str;
 
 final class UpdateWorkspaceAction
 {
@@ -19,9 +18,9 @@ final class UpdateWorkspaceAction
         }
 
         $workspace->update([
-            'name'     => $data['name'],
+            'name' => $data['name'],
             'timezone' => $data['timezone'],
-            'locale'   => $data['locale'] ?? $workspace->locale,
+            'locale' => $data['locale'] ?? $workspace->locale,
             'settings' => $settings,
         ]);
 

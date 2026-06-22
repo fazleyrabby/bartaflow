@@ -16,9 +16,9 @@ final class DisconnectAccountAction
             $wasDefault = $account->is_default;
 
             $account->update([
-                'status'        => AccountStatus::Disconnected->value,
+                'status' => AccountStatus::Disconnected->value,
                 'status_reason' => 'Manually disconnected.',
-                'is_default'    => false,
+                'is_default' => false,
             ]);
 
             // Promote the next connected account as default if this was the default.

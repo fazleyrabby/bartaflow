@@ -23,13 +23,13 @@ class InvitationFactory extends Factory
     {
         return [
             'workspace_id' => Workspace::factory(),
-            'invited_by'   => User::factory(),
-            'email'        => fake()->unique()->safeEmail(),
-            'role'         => Role::Staff->value,
-            'token'        => Str::random(64),
-            'status'       => InvitationStatus::Pending->value,
-            'expires_at'   => now()->addDays(7),
-            'accepted_at'  => null,
+            'invited_by' => User::factory(),
+            'email' => fake()->unique()->safeEmail(),
+            'role' => Role::Staff->value,
+            'token' => Str::random(64),
+            'status' => InvitationStatus::Pending->value,
+            'expires_at' => now()->addDays(7),
+            'accepted_at' => null,
         ];
     }
 
@@ -41,7 +41,7 @@ class InvitationFactory extends Factory
     public function accepted(): static
     {
         return $this->state([
-            'status'      => InvitationStatus::Accepted->value,
+            'status' => InvitationStatus::Accepted->value,
             'accepted_at' => now(),
         ]);
     }

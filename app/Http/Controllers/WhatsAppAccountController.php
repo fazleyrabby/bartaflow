@@ -25,7 +25,7 @@ class WhatsAppAccountController extends Controller
     public function index(): View
     {
         $workspace = $this->current->get();
-        $this->authorize('viewAny', [\App\Models\WhatsAppAccount::class, $workspace->id]);
+        $this->authorize('viewAny', [WhatsAppAccount::class, $workspace->id]);
 
         $accounts = WhatsAppAccount::where('workspace_id', $workspace->id)
             ->orderByDesc('is_default')
@@ -38,7 +38,7 @@ class WhatsAppAccountController extends Controller
     public function create(): View
     {
         $workspace = $this->current->get();
-        $this->authorize('create', [\App\Models\WhatsAppAccount::class, $workspace->id]);
+        $this->authorize('create', [WhatsAppAccount::class, $workspace->id]);
 
         return view('settings.whatsapp.create');
     }
@@ -46,7 +46,7 @@ class WhatsAppAccountController extends Controller
     public function store(ConnectAccountRequest $request, ConnectWhatsAppAccountAction $action): RedirectResponse
     {
         $workspace = $this->current->get();
-        $account   = $action->execute($workspace, $request->validated());
+        $account = $action->execute($workspace, $request->validated());
 
         return redirect()->route('settings.whatsapp')
             ->with('status', "Account \"{$account->label}\" connected. Status: {$account->status->label()}.");
