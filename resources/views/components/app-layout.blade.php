@@ -7,9 +7,18 @@
     <title>{{ isset($title) ? $title.' · '.config('app.name') : config('app.name') }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-gray-50 antialiased" x-data="{ sidebarOpen: true }">
+<body class="bg-gray-50 antialiased" x-data="{ sidebarOpen: window.innerWidth >= 1024 }">
     <div class="flex h-screen overflow-hidden">
         <x-nav-sidebar />
+
+        {{-- Mobile backdrop --}}
+        <div
+            x-show="sidebarOpen"
+            x-transition.opacity
+            @click="sidebarOpen = false"
+            class="fixed inset-0 z-30 bg-gray-900/50 lg:hidden"
+            style="display:none"
+        ></div>
 
         <div class="flex min-w-0 flex-1 flex-col overflow-y-auto overflow-x-hidden">
             {{-- Topbar --}}

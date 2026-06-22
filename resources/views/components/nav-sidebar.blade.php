@@ -20,8 +20,8 @@
 @endphp
 
 <aside
-    x-bind:class="sidebarOpen ? 'w-64' : 'w-0'"
-    class="shrink-0 flex flex-col border-r border-gray-200 bg-white overflow-hidden transition-all duration-200 ease-in-out"
+    :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:w-0 lg:translate-x-0'"
+    class="fixed inset-y-0 left-0 z-40 w-64 shrink-0 flex flex-col border-r border-gray-200 bg-white overflow-hidden transition-all duration-200 ease-in-out lg:static lg:inset-auto"
 >
     <div class="flex h-16 items-center border-b border-gray-200 px-4">
         <a href="{{ route('dashboard') }}" class="text-xl font-semibold text-emerald-600">BartaFlow</a>
