@@ -26,7 +26,7 @@
         <div class="scroll-gutter-stable relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
 
             {{-- Topbar --}}
-            <header class="sticky top-0 z-20 flex h-16 items-center justify-between border-b border-gray-200 bg-white px-4 sm:px-6 lg:px-8">
+            <header class="sticky top-0 z-20 flex h-16 shrink-0 items-center justify-between border-b border-gray-200 bg-white px-4 sm:px-6 lg:px-8">
                 <div class="flex items-center gap-4">
                     {{-- Hamburger (mobile only) --}}
                     <button

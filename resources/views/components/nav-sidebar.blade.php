@@ -24,7 +24,7 @@
     class="absolute inset-y-0 left-0 z-40 w-64 shrink-0 flex flex-col bg-white border-r border-gray-200 overflow-hidden transition-all duration-300 lg:static"
 >
     {{-- Logo --}}
-    <div class="flex h-16 items-center px-5 border-b border-gray-200">
+    <div class="flex h-16 shrink-0 items-center px-5 border-b border-gray-200">
         <a href="{{ route('dashboard') }}" class="flex items-center gap-2 text-xl font-bold text-gray-900">
             <svg class="h-6 w-6 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
@@ -83,7 +83,7 @@
     </div>
 
     {{-- User card --}}
-    <div class="border-t border-gray-200 p-4">
+    <div class="shrink-0 border-t border-gray-200 p-4">
         <div class="flex items-center gap-3">
             <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-sm font-bold text-emerald-700">
                 {{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 1)) }}
