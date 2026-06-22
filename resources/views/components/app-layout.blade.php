@@ -1,22 +1,15 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}"
-    x-data="{
-        sidebarOpen: false,
-        dark: localStorage.getItem('bartaflow_dark') === 'true'
-    }"
-    x-init="$watch('dark', v => localStorage.setItem('bartaflow_dark', v))"
-    :class="{ 'dark': dark }"
->
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="antialiased">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ isset($title) ? $title.' · '.config('app.name') : config('app.name') }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    {{-- Prevent dark mode flash --}}
+    {{-- Prevent dark mode flash before Alpine initialises --}}
     <script>if(localStorage.getItem('bartaflow_dark')==='true')document.documentElement.classList.add('dark')</script>
 </head>
-<body class="bg-gray-50 text-gray-900 antialiased dark:bg-gray-950 dark:text-gray-100 min-h-screen">
+<body class="bg-gray-50 text-gray-900 dark:bg-gray-950 dark:text-gray-100" x-data="{ sidebarOpen: false }">
     <div class="flex h-screen overflow-hidden">
 
         {{-- Sidebar --}}
@@ -35,7 +28,7 @@
         <div class="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
 
             {{-- Topbar --}}
-            <header class="sticky top-0 z-20 flex h-16 items-center justify-between border-b border-gray-200 bg-white px-4 dark:border-gray-800 dark:bg-gray-900 sm:px-6">
+            <header class="sticky top-0 z-20 flex h-16 items-center justify-between border-b border-gray-200 bg-white px-4 dark:border-gray-800 dark:bg-gray-900 sm:px-6 lg:px-8">
                 <div class="flex items-center gap-4">
                     {{-- Hamburger (mobile only) --}}
                     <button
@@ -50,11 +43,21 @@
                 </div>
 
                 <div class="flex items-center gap-3">
-                    {{-- Dark / Light toggle --}}
+                    {{-- Dark / Light toggle — self-contained Alpine component --}}
                     <button
-                        @click="dark = !dark"
-                        class="rounded-lg p-2 text-gray-500 hover:bg-gray-100 focus:outline-none dark:text-gray-400 dark:hover:bg-gray-800"
+                        x-data="{
+                            dark: localStorage.getItem('bartaflow_dark') === 'true',
+                            toggle() {
+                                this.dark = !this.dark;
+                                this.dark
+                                    ? document.documentElement.classList.add('dark')
+                                    : document.documentElement.classList.remove('dark');
+                                localStorage.setItem('bartaflow_dark', this.dark);
+                            }
+                        }"
+                        @click="toggle()"
                         :title="dark ? 'Switch to light mode' : 'Switch to dark mode'"
+                        class="rounded-lg p-2 text-gray-500 hover:bg-gray-100 focus:outline-none dark:text-gray-400 dark:hover:bg-gray-800"
                     >
                         <svg x-show="!dark" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
@@ -148,9 +151,9 @@
                 @isset($header)
                     <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
                         <div>
-                            <h1 class="text-xl font-semibold text-gray-900 dark:text-white">{{ $header }}</h1>
+                            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ $header }}</h1>
                             @isset($subheader)
-                                <p class="text-sm text-gray-500 dark:text-gray-400">{{ $subheader }}</p>
+                                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ $subheader }}</p>
                             @endisset
                         </div>
                         @isset($actions)
