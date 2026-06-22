@@ -6,6 +6,7 @@ namespace App\Providers;
 
 use App\Models\Contact;
 use App\Models\ContactTag;
+use App\Models\Message;
 use App\Models\Template;
 use App\Models\WhatsAppAccount;
 use App\Models\Workspace;
@@ -14,6 +15,7 @@ use App\Observers\TemplateObserver;
 use App\Policies\ContactPolicy;
 use App\Policies\ContactTagPolicy;
 use App\Policies\MembershipPolicy;
+use App\Policies\MessagePolicy;
 use App\Policies\TemplatePolicy;
 use App\Policies\WhatsAppAccountPolicy;
 use App\Policies\WorkspacePolicy;
@@ -59,6 +61,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Contact::class, ContactPolicy::class);
         Gate::policy(ContactTag::class, ContactTagPolicy::class);
         Gate::policy(Template::class, TemplatePolicy::class);
+        Gate::policy(Message::class, MessagePolicy::class);
 
         Template::observe(TemplateObserver::class);
 
@@ -75,6 +78,13 @@ class AppServiceProvider extends ServiceProvider
             return Limit::perMinute(5)->by(
                 $request->string('email')->lower()->value().'|'.$request->ip()
             );
+        });
+
+        // Outbound WhatsApp throttle for SendMessageJob (per second, configurable).
+        RateLimiter::for('whatsapp-send', function () {
+            $perSecond = (int) config('services.whatsapp.rate_per_second', 10);
+
+            return Limit::perSecond(max(1, $perSecond));
         });
     }
 

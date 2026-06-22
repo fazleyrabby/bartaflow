@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 return [
 
+    'whatsapp' => [
+        // Outbound send throttle (messages per second) for SendMessageJob.
+        'rate_per_second' => (int) env('WHATSAPP_RATE_PER_SECOND', 10),
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Third Party Services

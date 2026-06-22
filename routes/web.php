@@ -14,6 +14,7 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\ContactTagController;
 use App\Http\Controllers\HealthController;
 use App\Http\Controllers\InvitationController;
+use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\TemplateController;
@@ -100,6 +101,11 @@ Route::middleware('auth')->group(function () {
         Route::post('/templates/preview', [TemplateController::class, 'preview'])->name('templates.preview');
         Route::post('/templates/{template}/duplicate', [TemplateController::class, 'duplicate'])->name('templates.duplicate');
         Route::resource('templates', TemplateController::class)->except(['show']);
+
+        // Messaging — compose & send now
+        Route::get('/messages', [MessageController::class, 'index'])->name('messages.index');
+        Route::get('/messages/create', [MessageController::class, 'create'])->name('messages.create');
+        Route::post('/messages', [MessageController::class, 'store'])->name('messages.store');
 
         // Workspace switcher
         Route::post('/workspaces/switch', WorkspaceSwitcherController::class)->name('workspaces.switch');
