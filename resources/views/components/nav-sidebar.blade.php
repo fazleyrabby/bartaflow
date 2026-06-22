@@ -20,14 +20,10 @@
 @endphp
 
 <aside
-    class="fixed inset-y-0 left-0 z-40 flex w-64 shrink-0 flex-col border-r border-gray-200 bg-white transition-transform duration-200 -translate-x-full lg:static lg:transform-none"
-    :class="sidebarOpen ? 'translate-x-0' : ''"
+    class="flex w-64 shrink-0 flex-col border-r border-gray-200 bg-white"
 >
-    <div class="flex h-16 items-center justify-between border-b border-gray-200 px-4">
+    <div class="flex h-16 items-center border-b border-gray-200 px-4">
         <a href="{{ route('dashboard') }}" class="text-xl font-semibold text-emerald-600">BartaFlow</a>
-        <button @click="sidebarOpen = false" class="rounded-lg p-2 text-gray-500 hover:bg-gray-100 lg:hidden" aria-label="Close menu">
-            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-        </button>
     </div>
 
     <div class="overflow-y-auto py-4 px-3">
