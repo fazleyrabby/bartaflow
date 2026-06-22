@@ -20,8 +20,8 @@
 @endphp
 
 <aside
-    class="fixed inset-y-0 left-0 z-40 flex w-64 shrink-0 flex-col border-r border-gray-200 bg-white transition-transform duration-200 lg:static lg:translate-x-0"
-    :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
+    class="fixed inset-y-0 left-0 z-40 flex w-64 shrink-0 flex-col border-r border-gray-200 bg-white transition-transform duration-200 -translate-x-full lg:static lg:translate-x-0"
+    :class="sidebarOpen ? 'translate-x-0' : ''"
 >
     <div class="flex h-16 items-center justify-between border-b border-gray-200 px-4">
         <a href="{{ route('dashboard') }}" class="text-xl font-semibold text-emerald-600">BartaFlow</a>

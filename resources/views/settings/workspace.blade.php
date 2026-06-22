@@ -37,7 +37,7 @@
 
                     <x-form.input
                         name="business_name"
-                        label="Business name (used as @{{business_name}} in templates)"
+                        label="Business name (used as a variable in message templates)"
                         :value="$workspace->businessName()"
                         placeholder="{{ $workspace->name }}"
                     />
