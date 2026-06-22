@@ -3,7 +3,7 @@
     <x-slot:header>Profile</x-slot:header>
     <x-slot:subheader>Manage your personal information and password.</x-slot:subheader>
 
-    <div class="max-w-2xl space-y-6">
+    <div class="w-full max-w-3xl space-y-6">
 
         {{-- ── Profile Information ── --}}
         <x-card title="Personal information">
@@ -11,7 +11,7 @@
                 @csrf
                 @method('PATCH')
 
-                <div class="space-y-4">
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <x-form.input
                         name="name"
                         label="Full name"
@@ -19,7 +19,7 @@
                         required
                     />
 
-                    <div class="space-y-1">
+                    <div>
                         <x-form.input
                             name="email"
                             label="Email address"
@@ -28,7 +28,7 @@
                             required
                         />
                         @if (! $user->hasVerifiedEmail())
-                            <p class="flex items-center gap-1 text-xs text-amber-600">
+                            <p class="mt-1 flex items-center gap-1 text-xs text-amber-600">
                                 <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12A9 9 0 1 1 3 12a9 9 0 0 1 18 0z"/></svg>
                                 Unverified — check your email or
                                 <a href="{{ route('verification.notice') }}" class="underline">resend link</a>.
@@ -36,13 +36,15 @@
                         @endif
                     </div>
 
-                    <x-form.input
-                        name="phone"
-                        label="Phone (optional)"
-                        type="tel"
-                        :value="$user->phone"
-                        placeholder="+8801XXXXXXXXX"
-                    />
+                    <div class="sm:col-span-2">
+                        <x-form.input
+                            name="phone"
+                            label="Phone (optional)"
+                            type="tel"
+                            :value="$user->phone"
+                            placeholder="+8801XXXXXXXXX"
+                        />
+                    </div>
                 </div>
 
                 <div class="mt-4 flex items-center gap-3">
