@@ -3,7 +3,7 @@
     <x-slot:header>Workspace Settings</x-slot:header>
     <x-slot:subheader>Manage your workspace name, timezone, and business identity.</x-slot:subheader>
 
-    <div class="max-w-3xl space-y-6">
+    <div class="space-y-6">
 
         {{-- ── General Settings ── --}}
         <x-card title="General">

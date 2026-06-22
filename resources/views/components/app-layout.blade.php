@@ -7,13 +7,24 @@
     <title>{{ isset($title) ? $title.' · '.config('app.name') : config('app.name') }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-gray-50 antialiased">
+<body class="bg-gray-50 antialiased" x-data="{ sidebarOpen: true }">
     <div class="flex h-screen overflow-hidden">
         <x-nav-sidebar />
 
-        <div class="flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
+        <div class="flex min-w-0 flex-1 flex-col overflow-y-auto overflow-x-hidden">
             {{-- Topbar --}}
-            <header class="sticky top-0 z-20 flex h-16 items-center gap-3 border-b border-gray-200 bg-white px-6 sm:px-8">
+            <header class="sticky top-0 z-20 flex h-16 items-center gap-3 border-b border-gray-200 bg-white px-4 sm:px-6">
+                {{-- Sidebar toggle --}}
+                <button
+                    @click="sidebarOpen = !sidebarOpen"
+                    class="rounded-lg p-2 text-gray-500 hover:bg-gray-100 focus:outline-none"
+                    aria-label="Toggle sidebar"
+                >
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                </button>
+
                 <div class="ml-auto flex items-center gap-3">
                     {{-- Workspace switcher --}}
                     @isset($userWorkspaces)
