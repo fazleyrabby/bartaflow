@@ -103,10 +103,13 @@ Route::middleware('auth')->group(function () {
         Route::post('/templates/{template}/duplicate', [TemplateController::class, 'duplicate'])->name('templates.duplicate');
         Route::resource('templates', TemplateController::class)->except(['show']);
 
-        // Messaging — compose & send now
+        // Messaging — compose, send now & logs (Task 009)
         Route::get('/messages', [MessageController::class, 'index'])->name('messages.index');
         Route::get('/messages/create', [MessageController::class, 'create'])->name('messages.create');
         Route::post('/messages', [MessageController::class, 'store'])->name('messages.store');
+        Route::post('/messages/retry-bulk', [MessageController::class, 'bulkRetry'])->name('messages.retry-bulk');
+        Route::get('/messages/{message}', [MessageController::class, 'show'])->name('messages.show');
+        Route::post('/messages/{message}/retry', [MessageController::class, 'retry'])->name('messages.retry');
 
         // Scheduling
         Route::get('/scheduling', [ScheduledMessageController::class, 'index'])->name('scheduling.index');

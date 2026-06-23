@@ -5,6 +5,9 @@
     /* Reserve the scrollbar gutter so the topbar padding stays consistent
        whether or not a page is tall enough to scroll. */
     .scroll-gutter-stable { scrollbar-gutter: stable; }
+
+    /* Hide Alpine-cloaked elements until Alpine initialises. */
+    [x-cloak] { display: none !important; }
 }
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';

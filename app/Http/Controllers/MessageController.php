@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Actions\Messaging\RetryMessageAction;
 use App\Actions\Messaging\SendTemplatedMessageAction;
 use App\Enums\AccountStatus;
+use App\Enums\MessageStatus;
 use App\Enums\TemplateStatus;
 use App\Exceptions\MessageSendException;
 use App\Http\Requests\Messaging\SendMessageRequest;
@@ -17,25 +19,84 @@ use App\Models\WhatsAppAccount;
 use App\Services\Messaging\SendTemplatedMessageData;
 use App\Services\Tenancy\CurrentWorkspace;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class MessageController extends Controller
 {
     public function __construct(private readonly CurrentWorkspace $current) {}
 
-    public function index(): View
+    public function index(Request $request): View
     {
         $workspace = $this->current->get();
         $this->authorize('viewAny', [Message::class, $workspace->id]);
 
         $messages = Message::where('workspace_id', $workspace->id)
             ->with(['template:id,name', 'account:id,label'])
-            ->when(request('status'), fn ($q, $s) => $q->where('status', $s))
+            ->status($request->string('status')->toString())
+            ->dateBetween($request->string('date_from')->toString(), $request->string('date_to')->toString())
+            ->forAccount($request->integer('account_id') ?: null)
+            ->forTemplate($request->integer('template_id') ?: null)
+            ->search($request->string('search')->toString())
             ->orderByDesc('created_at')
             ->paginate(25)
             ->withQueryString();
 
-        return view('messages.index', compact('messages', 'workspace'));
+        $accounts = WhatsAppAccount::where('workspace_id', $workspace->id)
+            ->orderBy('label')
+            ->get(['id', 'label']);
+
+        $templates = Template::where('workspace_id', $workspace->id)
+            ->orderBy('name')
+            ->get(['id', 'name']);
+
+        $failedCount = Message::where('workspace_id', $workspace->id)
+            ->where('status', MessageStatus::Failed->value)
+            ->count();
+
+        return view('messages.index', compact('messages', 'workspace', 'accounts', 'templates', 'failedCount'));
+    }
+
+    public function show(Message $message): View
+    {
+        $this->ensureBelongsToCurrentWorkspace($message);
+        $this->authorize('view', $message);
+
+        $message->load(['template:id,name', 'account:id,label,phone_number', 'contact:id,name,phone']);
+
+        return view('messages.show', [
+            'message' => $message,
+            'workspace' => $this->current->get(),
+        ]);
+    }
+
+    public function retry(Message $message, RetryMessageAction $action): RedirectResponse
+    {
+        $this->ensureBelongsToCurrentWorkspace($message);
+        $this->authorize('retry', $message);
+
+        $requeued = $action->retry($message);
+
+        return back()->with(
+            $requeued ? 'status' : 'error',
+            $requeued ? 'Message re-queued.' : 'Only failed messages can be retried.'
+        );
+    }
+
+    public function bulkRetry(Request $request, RetryMessageAction $action): RedirectResponse
+    {
+        $workspace = $this->current->get();
+        $this->authorize('viewAny', [Message::class, $workspace->id]);
+
+        $ids = array_map('intval', (array) $request->input('message_ids', []));
+        $count = $action->retryMany($workspace->id, $ids);
+
+        return back()->with(
+            $count > 0 ? 'status' : 'error',
+            $count > 0
+                ? "{$count} message".($count === 1 ? '' : 's').' re-queued.'
+                : 'No failed messages selected.'
+        );
     }
 
     public function create(): View
@@ -92,5 +153,12 @@ class MessageController extends Controller
         }
 
         return redirect()->route('messages.index')->with('status', $msg.'.');
+    }
+
+    private function ensureBelongsToCurrentWorkspace(Message $message): void
+    {
+        if ($message->workspace_id !== $this->current->id()) {
+            abort(404);
+        }
     }
 }
