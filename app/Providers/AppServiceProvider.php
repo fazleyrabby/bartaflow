@@ -12,6 +12,8 @@ use App\Models\Template;
 use App\Models\WhatsAppAccount;
 use App\Models\Workspace;
 use App\Models\WorkspaceUser;
+use App\Observers\MessageObserver;
+use App\Observers\ScheduledMessageObserver;
 use App\Observers\TemplateObserver;
 use App\Policies\ContactPolicy;
 use App\Policies\ContactTagPolicy;
@@ -67,6 +69,8 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(ScheduledMessage::class, ScheduledMessagePolicy::class);
 
         Template::observe(TemplateObserver::class);
+        Message::observe(MessageObserver::class);
+        ScheduledMessage::observe(ScheduledMessageObserver::class);
 
         $this->configureRateLimiting();
         $this->configureViewComposers();

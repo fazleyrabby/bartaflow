@@ -12,6 +12,7 @@ use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\Auth\VerifyEmailNoticeController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\ContactTagController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HealthController;
 use App\Http\Controllers\InvitationController;
 use App\Http\Controllers\MessageController;
@@ -77,7 +78,7 @@ Route::middleware('auth')->group(function () {
     // ─────────────────────────────────────────────────────────────────────────
     Route::middleware(['verified', 'workspace'])->group(function () {
         // Dashboard
-        Route::view('/dashboard', 'dashboard')->name('dashboard');
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
         // Profile
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
