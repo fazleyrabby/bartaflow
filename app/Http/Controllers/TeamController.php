@@ -13,13 +13,17 @@ use App\Http\Requests\Workspace\InviteMemberRequest;
 use App\Http\Requests\Workspace\UpdateMemberRoleRequest;
 use App\Models\Invitation;
 use App\Models\WorkspaceUser;
+use App\Services\Audit\AuditLogger;
 use App\Services\Tenancy\CurrentWorkspace;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
 class TeamController extends Controller
 {
-    public function __construct(private readonly CurrentWorkspace $current) {}
+    public function __construct(
+        private readonly CurrentWorkspace $current,
+        private readonly AuditLogger $audit,
+    ) {}
 
     public function index(): View
     {
@@ -48,15 +52,18 @@ class TeamController extends Controller
     {
         $workspace = $this->current->get();
 
-        $action->execute(
-            $workspace,
-            $request->user(),
-            $request->string('email')->toString(),
-            Role::from($request->string('role')->toString()),
-        );
+        $email = $request->string('email')->toString();
+        $role = Role::from($request->string('role')->toString());
+
+        $action->execute($workspace, $request->user(), $email, $role);
+
+        $this->audit->log('team.invited', $workspace, "Invited {$email} as {$role->value}", [
+            'email' => $email,
+            'role' => $role->value,
+        ]);
 
         return redirect()->route('settings.team')
-            ->with('status', 'Invitation sent to '.$request->string('email').'.');
+            ->with('status', 'Invitation sent to '.$email.'.');
     }
 
     public function updateRole(
@@ -72,7 +79,17 @@ class TeamController extends Controller
             abort(404);
         }
 
-        $action->execute($membership, Role::from($request->string('role')->toString()));
+        $newRole = Role::from($request->string('role')->toString());
+        /** @var Role $oldRole */
+        $oldRole = $membership->role;
+
+        $action->execute($membership, $newRole);
+
+        $this->audit->log('team.role_changed', $membership, "Changed role to {$newRole->value}", [
+            'user_id' => $membership->user_id,
+            'from' => $oldRole->value,
+            'to' => $newRole->value,
+        ]);
 
         return redirect()->route('settings.team')
             ->with('status', 'Role updated successfully.');
@@ -87,7 +104,13 @@ class TeamController extends Controller
             abort(404);
         }
 
+        $removedUserId = $membership->user_id;
+
         $action->execute($workspace, $membership);
+
+        $this->audit->log('team.member_removed', $workspace, 'Removed a member from the workspace', [
+            'user_id' => $removedUserId,
+        ]);
 
         return redirect()->route('settings.team')
             ->with('status', 'Member removed from the workspace.');

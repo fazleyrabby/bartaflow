@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
@@ -142,6 +143,9 @@ Route::middleware('auth')->group(function () {
                 ->name('invitations.resend');
             Route::delete('/invitations/{invitation}', [InvitationController::class, 'revoke'])
                 ->name('invitations.revoke');
+
+            // Activity log (audit trail) — owner/admin only (policy-gated)
+            Route::get('/activity', [ActivityLogController::class, 'index'])->name('activity');
 
             // WhatsApp Accounts
             Route::get('/whatsapp', [WhatsAppAccountController::class, 'index'])->name('whatsapp');

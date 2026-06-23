@@ -13,6 +13,7 @@ use App\Http\Requests\WhatsApp\ConnectAccountRequest;
 use App\Http\Requests\WhatsApp\SendTestMessageRequest;
 use App\Http\Requests\WhatsApp\UpdateAccountRequest;
 use App\Models\WhatsAppAccount;
+use App\Services\Audit\AuditLogger;
 use App\Services\Tenancy\CurrentWorkspace;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -20,7 +21,10 @@ use Illuminate\View\View;
 
 class WhatsAppAccountController extends Controller
 {
-    public function __construct(private readonly CurrentWorkspace $current) {}
+    public function __construct(
+        private readonly CurrentWorkspace $current,
+        private readonly AuditLogger $audit,
+    ) {}
 
     public function index(): View
     {
@@ -47,6 +51,11 @@ class WhatsAppAccountController extends Controller
     {
         $workspace = $this->current->get();
         $account = $action->execute($workspace, $request->validated());
+
+        $this->audit->log('account.connected', $account, "Connected WhatsApp account \"{$account->label}\"", [
+            'label' => $account->label,
+            'phone_number' => $account->phone_number,
+        ]);
 
         return redirect()->route('settings.whatsapp')
             ->with('status', "Account \"{$account->label}\" connected. Status: {$account->status->label()}.");
@@ -86,6 +95,8 @@ class WhatsAppAccountController extends Controller
         $this->authorize('delete', $account);
         $this->ensureBelongsToCurrentWorkspace($account);
         $action->execute($account);
+
+        $this->audit->log('account.disconnected', $account, "Disconnected WhatsApp account \"{$account->label}\"");
 
         return redirect()->route('settings.whatsapp')
             ->with('status', "Account \"{$account->label}\" disconnected.");

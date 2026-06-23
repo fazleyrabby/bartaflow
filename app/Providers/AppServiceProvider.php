@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Listeners\LogAuthentication;
+use App\Models\ActivityLog;
 use App\Models\Contact;
 use App\Models\ContactTag;
 use App\Models\Message;
@@ -15,6 +17,7 @@ use App\Models\WorkspaceUser;
 use App\Observers\MessageObserver;
 use App\Observers\ScheduledMessageObserver;
 use App\Observers\TemplateObserver;
+use App\Policies\ActivityLogPolicy;
 use App\Policies\ContactPolicy;
 use App\Policies\ContactTagPolicy;
 use App\Policies\MembershipPolicy;
@@ -27,9 +30,11 @@ use App\Services\Tenancy\CurrentWorkspace;
 use App\Services\WhatsApp\CloudApiWhatsAppClient;
 use App\Services\WhatsApp\FakeWhatsAppClient;
 use App\Services\WhatsApp\WhatsAppClient;
+use Illuminate\Auth\Events\Login;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\View;
@@ -67,10 +72,13 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Template::class, TemplatePolicy::class);
         Gate::policy(Message::class, MessagePolicy::class);
         Gate::policy(ScheduledMessage::class, ScheduledMessagePolicy::class);
+        Gate::policy(ActivityLog::class, ActivityLogPolicy::class);
 
         Template::observe(TemplateObserver::class);
         Message::observe(MessageObserver::class);
         ScheduledMessage::observe(ScheduledMessageObserver::class);
+
+        Event::listen(Login::class, LogAuthentication::class);
 
         $this->configureRateLimiting();
         $this->configureViewComposers();

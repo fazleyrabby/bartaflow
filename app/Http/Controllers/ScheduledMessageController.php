@@ -17,6 +17,7 @@ use App\Models\ScheduledMessage;
 use App\Models\Template;
 use App\Models\WhatsAppAccount;
 use App\Models\Workspace;
+use App\Services\Audit\AuditLogger;
 use App\Services\Tenancy\CurrentWorkspace;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Carbon;
@@ -24,7 +25,10 @@ use Illuminate\View\View;
 
 class ScheduledMessageController extends Controller
 {
-    public function __construct(private readonly CurrentWorkspace $current) {}
+    public function __construct(
+        private readonly CurrentWorkspace $current,
+        private readonly AuditLogger $audit,
+    ) {}
 
     public function index(): View
     {
@@ -54,7 +58,11 @@ class ScheduledMessageController extends Controller
         $workspace = $this->current->get();
         $this->authorize('create', [ScheduledMessage::class, $workspace->id]);
 
-        $action->execute($workspace, (int) $request->user()->id, $this->payload($request));
+        $schedule = $action->execute($workspace, (int) $request->user()->id, $this->payload($request));
+
+        $this->audit->log('schedule.created', $schedule, 'Scheduled a message', [
+            'run_at' => $schedule->run_at->toIso8601String(),
+        ]);
 
         return redirect()->route('scheduling.index')
             ->with('status', 'Message scheduled successfully.');
@@ -93,6 +101,10 @@ class ScheduledMessageController extends Controller
         $this->authorize('cancel', $scheduling);
 
         $canceled = $action->execute($scheduling);
+
+        if ($canceled) {
+            $this->audit->log('schedule.canceled', $scheduling, 'Canceled a scheduled message');
+        }
 
         return redirect()->route('scheduling.index')
             ->with($canceled ? 'status' : 'error', $canceled

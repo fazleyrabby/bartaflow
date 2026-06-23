@@ -16,6 +16,7 @@ use App\Models\ContactTag;
 use App\Models\Message;
 use App\Models\Template;
 use App\Models\WhatsAppAccount;
+use App\Services\Audit\AuditLogger;
 use App\Services\Messaging\SendTemplatedMessageData;
 use App\Services\Tenancy\CurrentWorkspace;
 use Illuminate\Http\RedirectResponse;
@@ -24,7 +25,10 @@ use Illuminate\View\View;
 
 class MessageController extends Controller
 {
-    public function __construct(private readonly CurrentWorkspace $current) {}
+    public function __construct(
+        private readonly CurrentWorkspace $current,
+        private readonly AuditLogger $audit,
+    ) {}
 
     public function index(Request $request): View
     {
@@ -77,6 +81,10 @@ class MessageController extends Controller
 
         $requeued = $action->retry($message);
 
+        if ($requeued) {
+            $this->audit->log('message.retried', $message, 'Retried a failed message');
+        }
+
         return back()->with(
             $requeued ? 'status' : 'error',
             $requeued ? 'Message re-queued.' : 'Only failed messages can be retried.'
@@ -90,6 +98,10 @@ class MessageController extends Controller
 
         $ids = array_map('intval', (array) $request->input('message_ids', []));
         $count = $action->retryMany($workspace->id, $ids);
+
+        if ($count > 0) {
+            $this->audit->log('message.retried', null, "Bulk-retried {$count} failed message(s)", ['count' => $count]);
+        }
 
         return back()->with(
             $count > 0 ? 'status' : 'error',
@@ -146,6 +158,13 @@ class MessageController extends Controller
         } catch (MessageSendException $e) {
             return back()->withInput()->with('error', $e->getMessage());
         }
+
+        $this->audit->log('message.sent', null, "Queued {$result->queued} message(s)", [
+            'queued' => $result->queued,
+            'skipped' => $result->skipped,
+            'template_id' => $data->templateId,
+            'account_id' => $data->accountId,
+        ]);
 
         $msg = "{$result->queued} message".($result->queued === 1 ? '' : 's').' queued';
         if ($result->skipped > 0) {

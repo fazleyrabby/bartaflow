@@ -14,13 +14,17 @@ use App\Http\Requests\Contacts\StoreContactRequest;
 use App\Http\Requests\Contacts\UpdateContactRequest;
 use App\Models\Contact;
 use App\Models\ContactTag;
+use App\Services\Audit\AuditLogger;
 use App\Services\Tenancy\CurrentWorkspace;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
 class ContactController extends Controller
 {
-    public function __construct(private readonly CurrentWorkspace $current) {}
+    public function __construct(
+        private readonly CurrentWorkspace $current,
+        private readonly AuditLogger $audit,
+    ) {}
 
     public function index(): View
     {
@@ -104,6 +108,8 @@ class ContactController extends Controller
         $this->authorize('create', [Contact::class, $workspace->id]);
 
         $action->execute($workspace, $request->file('file'));
+
+        $this->audit->log('contact.imported', null, 'Imported contacts from CSV');
 
         return redirect()->route('contacts.index')
             ->with('status', 'Import started. Check back shortly for results.');

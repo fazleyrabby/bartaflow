@@ -11,6 +11,7 @@ use App\Http\Requests\Workspace\TransferOwnershipRequest;
 use App\Http\Requests\Workspace\UpdateWorkspaceRequest;
 use App\Models\User;
 use App\Models\WorkspaceUser;
+use App\Services\Audit\AuditLogger;
 use App\Services\Tenancy\CurrentWorkspace;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -18,7 +19,10 @@ use Illuminate\View\View;
 
 class WorkspaceController extends Controller
 {
-    public function __construct(private readonly CurrentWorkspace $current) {}
+    public function __construct(
+        private readonly CurrentWorkspace $current,
+        private readonly AuditLogger $audit,
+    ) {}
 
     public function edit(): View
     {
@@ -34,6 +38,10 @@ class WorkspaceController extends Controller
     {
         $workspace = $this->current->get();
         $action->execute($workspace, $request->validated());
+
+        $this->audit->log('workspace.updated', $workspace, 'Updated workspace settings', [
+            'changed' => array_keys($request->validated()),
+        ]);
 
         return redirect()->route('settings.workspace')
             ->with('status', 'Workspace settings updated.');
@@ -57,6 +65,10 @@ class WorkspaceController extends Controller
         }
 
         $action->execute($workspace, $request->user(), $newOwner);
+
+        $this->audit->log('workspace.ownership_transferred', $workspace, 'Transferred workspace ownership', [
+            'to_user_id' => $newOwner->id,
+        ]);
 
         return redirect()->route('settings.workspace')
             ->with('status', 'Ownership transferred to '.$newOwner->name.'.');
